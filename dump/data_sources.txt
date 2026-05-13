@@ -1,0 +1,31 @@
+Location to put the dataset: /gladstone/theodoris/lab/enockniyonkuru/maxtoki_development_data
+
+Source 1: Cell by Gene
+
+1. Construction of a human cell landscape at single-cell level: https://datasets.cellxgene.cziscience.com/74c3403a-451c-4a62-84e0-d8a8e45c7ea7.h5ad
+2. Survey of human embryonic development (1 million cells subset): https://datasets.cellxgene.cziscience.com/c3bf819d-423d-435f-b8d0-e36ad6088138.h5ad
+3. Survey of human embryonic development: https://datasets.cellxgene.cziscience.com/dd2564a6-27a0-433a-893c-72475e4a39fe.h5ad
+4. Sex-Specific Control of Human Heart Maturation by the Progesterone Receptor.: https://datasets.cellxgene.cziscience.com/d61a74ab-e1ef-4ced-9131-698bf7d94be2.h5ad
+5. Integrated adult and foetal hearts: https://datasets.cellxgene.cziscience.com/51073d23-97b7-4c05-84eb-5a18024e966c.h5ad
+6. Rotem_12W_heart_C1: https://datasets.cellxgene.cziscience.com/380b448b-85de-4953-8e82-2fda20276a12.h5ad
+7. Rotem_12W_heart_B1: https://datasets.cellxgene.cziscience.com/57c7e31e-6bf5-4498-a2d3-2a3728c64ded.h5ad
+8. Rotem_12W_heart_D1: https://datasets.cellxgene.cziscience.com/72e35ce5-fb20-46d0-adf9-a8c7f44af287.h5ad
+9. Rotem_12W_heart_A1: https://datasets.cellxgene.cziscience.com/731fb49f-4a81-48d5-9f28-ee1b08f1018d.h5ad
+10. Single-nuclei (sn) RNA-seq of the human outflow tract and aortic valve tissue (CS16-17, 12 pcw, Adult): https://datasets.cellxgene.cziscience.com/e6c07fbd-c90b-48c0-b6e3-b03b2d7218c5.h5ad 
+
+Source 2: Human Early Embryogenesis Atlas
+
+curl --location --fail https://service.azul.data.humancellatlas.org/manifest/files/ksQwlKVkY3A1OKRjdXJsxBDcPM8M8a9TIKm6MrnjQ2LOxBB6Q4VF6pRdTLwdCUJZ8BnnxCCZfSJCZ17uFNzShxfsWzhVHmDHhXYH9p8RdfkXq6ZUPw | curl --retry 15 --retry-delay 10 --config -
+
+Source 3: Cells UCSC
+1. Human Cardiogenesis in vintro:  https://cells.ucsc.edu/cardiogenesis-atac/in-vitro/exprMatrix.tsv.gz
+2. Human Cardiogenesis in vivo:  https://cells.ucsc.edu/cardiogenesis-atac/in-vivo/exprMatrix.tsv.gz 
+3. Multiomic Human Heart in snRNA-seq matrix: https://cells.ucsc.edu/multiomic-human-heart/rna/matrix.mtx.gz 
+4. Multiomic Human Heart in snATAC-seq matrix: https://cells.ucsc.edu/multiomic-human-heart/atac/matrix.mtx.gz 
+5. Heart of Cells Overall heart scRNA-seq: https://cells.ucsc.edu/?ds=hoc#:~:text=Matrix%3A-,exprMatrix.tsv.gz,-Help%3A%20Load%20matrix
+
+Source 4: Lab Directory 
+1. Human Fetal Cis-Regulatory Elements: /gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/9010519993/File_S3_Matrix.Gene_Raw_Counts_of_Cells.loom
+2. Human Fetal Striatum Atlas: /gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/E-MTAB-8894/E-MTAB-8894.loom
+3. Human Megakaryocyte Development: /gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/4110056855/
+4. Fetal vs. Adult Human Epicardium: /gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/cxg/5500c673-1610-40a0-86d9-64d987ae50e6.loom
