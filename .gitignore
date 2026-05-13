@@ -43,3 +43,6 @@ venv/
 *.out
 *.err
 slurm-*.out
+
+# Generated report outputs (local scratch)
+dump/
