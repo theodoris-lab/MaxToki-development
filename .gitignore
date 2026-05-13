@@ -42,6 +42,9 @@ venv/
 # VS Code workspace file
 *.code-workspace
 
+# Archived / internal scripts
+scripts/archive/
+
 # Slurm job outputs
 *.out
 *.err
