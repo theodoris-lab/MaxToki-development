@@ -39,6 +39,9 @@ venv/
 .idea/
 .vscode/
 
+# VS Code workspace file
+*.code-workspace
+
 # Slurm job outputs
 *.out
 *.err
