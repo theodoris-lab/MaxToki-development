@@ -4,8 +4,11 @@ Fine-tuning the MaxToki single-cell foundation model on human developmental tran
 
 We start with **cardiac development** as a proof of concept, then expand to other organs.
 
+## Human Heart Development Atlas
 
-## Data (Step 1 : Heart Development)
+We constructed a [human heart development atlas](documents/maxtoki_heart_development_data_survey_report.md) by aggregating and harmonizing multi-source single-cell and spatial transcriptomics data spanning 5.5–20 post-conceptual weeks. Datasets were filtered to normal human fetal heart tissue, unified into AnnData H5AD format, and annotated with consistent developmental stage and cell-type labels across 10 published studies totaling ~319,000 cells.
+
+## Data Curation for Heart Development
 
 Starting with ~319,000 cells spanning 5.5–20 post-conceptual weeks from two sources:
 
