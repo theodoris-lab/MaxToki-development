@@ -6,7 +6,13 @@ We start with **cardiac development** as a proof of concept, then expand to othe
 
 ## Human Heart Development Atlas
 
-We constructed a [human heart development atlas](documents/human_heart_development_atlas.txt) by aggregating and harmonizing multi-source single-cell and spatial transcriptomics data spanning 5.5–20 post-conceptual weeks. Datasets were filtered to normal human fetal heart tissue, unified into AnnData H5AD format, and annotated with consistent developmental stage and cell-type labels across 10 published studies totaling ~319,000 cells.
+To guide data curation and model training, we built a [hierarchical cardiac cell-type atlas](documents/human_heart_development_atlas.txt) from publicly available literature on human heart development. The goal was to map how cells differentiate — from the zygote all the way to mature cardiac cell types present at birth — capturing the full developmental trajectory of the human heart.
+
+The atlas is organized as a lineage tree and includes:
+- **Differentiation hierarchy** — from zygote → mesoderm → cardiac progenitors → specialized cardiac cell types
+- **PCW** (post-conceptual weeks) — the developmental time window when each cell type emerges or is active
+- **Transcription factors** — key regulators driving each differentiation step, where known from literature
+- **`*`** — marks cell types present in our downloaded dataset, allowing direct mapping between the atlas and available data
 
 ## Data Curation for Heart Development
 
