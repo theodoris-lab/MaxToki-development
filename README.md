@@ -6,7 +6,7 @@ We start with **cardiac development** as a proof of concept, then expand to othe
 
 ## Human Heart Development Atlas
 
-We constructed a [human heart development atlas](documents/maxtoki_heart_development_data_survey_report.md) by aggregating and harmonizing multi-source single-cell and spatial transcriptomics data spanning 5.5–20 post-conceptual weeks. Datasets were filtered to normal human fetal heart tissue, unified into AnnData H5AD format, and annotated with consistent developmental stage and cell-type labels across 10 published studies totaling ~319,000 cells.
+We constructed a [human heart development atlas](documents/human_heart_development_atlas.txt) by aggregating and harmonizing multi-source single-cell and spatial transcriptomics data spanning 5.5–20 post-conceptual weeks. Datasets were filtered to normal human fetal heart tissue, unified into AnnData H5AD format, and annotated with consistent developmental stage and cell-type labels across 10 published studies totaling ~319,000 cells.
 
 ## Data Curation for Heart Development
 
