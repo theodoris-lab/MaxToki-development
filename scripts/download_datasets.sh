@@ -415,6 +415,7 @@ lab	Human Fetal Cis-Regulatory Elements	source_4_lab_directory/01_human_fetal_ci
 lab	Human Fetal Striatum Atlas	source_4_lab_directory/02_human_fetal_striatum_atlas.loom
 lab	Human Megakaryocyte Development	source_4_lab_directory/03_human_megakaryocyte_development/
 lab	Fetal vs. Adult Human Epicardium	source_4_lab_directory/04_fetal_vs_adult_human_epicardium.loom
+lab	Tyser et al. 2021 Gastrulation Atlas	source_4_lab_directory/05_tyser_2021_gastrulation_atlas/
 MANIFEST
   log "Wrote manifest: $manifest"
 }
@@ -505,6 +506,7 @@ copy_lab_directory() {
     "Human Fetal Striatum Atlas|/gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/E-MTAB-8894/E-MTAB-8894.loom|02_human_fetal_striatum_atlas.loom"
     "Human Megakaryocyte Development|/gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/4110056855|03_human_megakaryocyte_development"
     "Fetal vs. Adult Human Epicardium|/gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/cxg/5500c673-1610-40a0-86d9-64d987ae50e6.loom|04_fetal_vs_adult_human_epicardium.loom"
+    "Tyser et al. 2021 Gastrulation Atlas|/gladstone/theodoris/lab/ctheodoris/validation/gastrulation|05_tyser_2021_gastrulation_atlas"
   )
 
   log "Source 4: Lab directory"

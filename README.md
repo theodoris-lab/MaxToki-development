@@ -20,8 +20,14 @@ Starting with ~319,000 cells spanning 5.5–20 post-conceptual weeks from two so
 
 | Source | Description | Cells |
 |---|---|---:|
-| [CellxGene](https://cellxgene.cziscience.com/) | 9 scRNA-seq/Visium datasets subsetted to fetal heart | 211,692 |
+| [CellxGene](https://cellxgene.cziscience.com/) | 9 scRNA-seq datasets subsetted to fetal heart (Visium slides excluded) | 191,724 |
 | [Lázár et al. 2025](https://www.nature.com/articles/s41588-025-02352-6) | Spatiotemporal atlas of the developing human heart (Mendeley Data) | 107,673 |
+
+> **Note — Visium excluded:** The 4 Visium spatial transcriptomics slides (Leshem et al. 2025, datasets 5–8; 19,968 spots) are excluded from training data because Visium is not single-cell resolution.
+
+**Datasets to add:**
+- [Tyser et al. *Nature* 2021](https://pubmed.ncbi.nlm.nih.gov/34789876/) — human gastrulation atlas; available at `/gladstone/theodoris/lab/ctheodoris/validation/gastrulation/` (added to download script)
+- [Xu et al. *Nat. Cell Biol.* 2023](https://www.nature.com/articles/s41556-023-01113-z) — human organogenesis atlas; **path needed from David**
 
 Large files (~90 GB) are stored externally on the Gladstone HPC at `/gladstone/theodoris/lab/enockniyonkuru/maxtoki_development_data/` and are not tracked by git.
 

@@ -12,30 +12,30 @@ Zygote (Day 0)
                 │   └── Mesoderm (PCW 2–3)
                 │       ├── Cardiogenic Mesoderm (PCW 2–3)[MESP1, ISL1, NKX2-5]
                 │       │   ├── Cardiomyocyte Lineage (PCW 3–8)[NKX2-5, MEF2C, GATA4]
-                │       │   │   └── Cardiac Muscle Cell* (PCW 8–40)[TNNT2, ACTC1, MYH6]
-                │       │   │       └── Fetal Cardiomyocyte* (PCW 8–20)[MYL7, MYL2]
-                │       │   │           ├── Ventricular Cardiomyocytes / Ventricular Cardiac Muscle Cell* (PCW 20–40) [IRX4, MYH7]
-                │       │   │           │   ├── Purkinje Fiber Cell(PCW 10–40) [IRX3, GJA5]
-                │       │   │           │   ├── Left Ventricular Cardiomyocytes[TBX5]
-                │       │   │           │   └── Right Ventricular Cardiomyocytes[HAND2]
-                │       │   │           └── Regular Atrial Cardiac Myocyte* (PCW 10–40) [NR2F2, MYH6]
-                │       │   │               ├── Left Atrial Cardiomyocytes [PITX2]
-                │       │   │               │   └── SA Node Pacemaker Cell (PCW 10–40)[SHOX2, TBX3, HCN4, CACNA1D]
-                │       │   │               └── Right Atrial Cardiomyocytes [TBX5]
+                │       │   │   └── Cardiac Muscle Cell / Fetal Cardiomyocyte* (PCW 6–20)[TNNT2, ACTC1, MYH6, MYL7, MYL2]
+                │       │   │       !! Same cell type; datasets may use either label. Generic CM labels after
+                │       │   │       !! PCW ~8 (when ventricular/atrial specification occurs) may mix lineages.
+                │       │   │       ├── Ventricular Cardiomyocytes / Ventricular Cardiac Muscle Cell* (PCW 8–40) [IRX4, MYH7]
+                │       │   │       │   ├── Purkinje Fiber Cell (PCW 10–40) [IRX3, GJA5, CNTN2]
+                │       │   │       │   ├── Left Ventricular Cardiomyocytes [TBX5]
+                │       │   │       │   └── Right Ventricular Cardiomyocytes [HAND2]
+                │       │   │       └── Regular Atrial Cardiac Myocyte* (PCW 8–40) [NR2F2, MYH6]
+                │       │   │           ├── Left Atrial Cardiomyocytes [PITX2]
+                │       │   │           └── Right Atrial Cardiomyocytes [TBX5]
+                │       │   │               └── SA Node Pacemaker Cell (PCW 10–40) [SHOX2, TBX3, HCN4, CACNA1D]
                 │       │   │
                 │       │   ├── Endothelial / Endocardial Lineage (PCW 3–10) [NFATC1, KDR, PECAM1]
-                │       │   │   ├── Endocardial Cell* (PCW 5–10) [NFATC1, NOTCH1]
-                │       │   │   └── Endocardial Endothelial Cell* (PCW 10–40) [KLF2, EMCN]
-                │       │   │   └── Atrial Septum Endothelial Cells
-                │       │   │       └── AtrSept_EC[LEF1, MSX1]
+                │       │   │   └── Endocardial Cell / Endocardial Endothelial Cell* (PCW 5–40) [NFATC1, NOTCH1, KLF2, EMCN]
+                │       │   │       !! Same cell type; "endocardial endothelial cell" is the mature label (PCW 10+).
+                │       │   │       !! Atrial septum ECs are endocardial cells of the atrial septum.
+                │       │   │       └── Atrial Septum Endothelial Cell / AtrSept_EC* (PCW 8–40) [LEF1, MSX1]
                 │       │   │
                 │       │   ├── Valve Lineage [SOX9, POSTN]
                 │       │   │   ├── Endocardial Cushion / Endocardial Cushion Endothelial Cell* (PCW 5–8) [NOTCH1, BMP2]
+                │       │   │   ├── Inflow Valve Endothelial Cells (PCW 8–40)
+                │       │   │   ├── Outflow Valve Endothelial Cells (PCW 8–40)
+                │       │   │   ├── Valve Mesenchymal Cells / Valve Mesenchymal Cell* (PCW 8–40) [SOX9]
                 │       │   │   └── Valve Interstitial Cell* (PCW 10–40) [POSTN, COL1A1]
-                │       │   │       ├── Inflow Valve Endothelial Cells
-                │       │   │       ├── Outflow Valve Endothelial Cells
-                │       │   │       ├── Valve Mesenchymal Cells / Valve Mesenchymal Cell*
-                │       │   │       └── Valve Interstitial Cells
                 │       │   │
                 │       │   ├── Mesenchymal and Stromal Lineage(PCW 5–40) [PRRX1, TWIST1]
                 │       │   │   ├── Cardiac Mesenchymal Cell* (PCW 5–10) [PRRX1]
@@ -63,22 +63,23 @@ Zygote (Day 0)
                 │       │           └── Erythrocyte* (PCW 8–40) [HBA1, HBB]
                 │       │
                 │       └── Splanchnic Mesoderm (PCW 2–3)[WT1, TBX18]
-                │           └── Proepicardial Organ (PCW 4–5)[WT1, TBX18]
-                │               ├── Epicardium (PCW 4–8)[WT1, TCF21]
-                │               │   ├── Mesothelial Cell of Epicardium* (PCW 8–40) [KRT18, WT1]
-                │               │   └── Epicardium Derived Cell* (PCW 6–10) [TCF21]
-                │               │       ├── Cardiac Fibroblast / fibroblast* (PCW 10–40) [COL1A1, DCN]
-                │               │       ├── Vascular Smooth Muscle Cell / smooth muscle cell* (PCW 10–40) [ACTA2, TAGLN]
-                │               │       ├── Pericyte* / Pericyte-like Mesenchymal Cell (Peric_MC)(PCW 10–40) [RGS5, CSPG4]
-                │               │       └── Adipocyte* (PCW 20–40) [FABP4, ADIPOQ]
-                │               │           └── Epicardial Adipocyte* (PCW 20–40)
-                │               │
-                │               └── Vascular Endothelial Cell / endothelial cell of vascular tree* (PCW 8–40) [PECAM1, VWF]
-                │                   ├── Capillary Endothelial Cell* (PCW 8–40) [RGCC, CA4]
-                │                   ├── Arterial Endothelial Cell / Endothelial Cell of Artery* (PCW 10–40) [SOX17, EFNB2]
-                │                   ├── Venous Endothelial Cell / Vein Endothelial Cell* (PCW 10–40) [NR2F2, ACKR1]
-                │                   └── Lymphatic Endothelial Cell / Endothelial Cell of Lymphatic Vessel*(PCW 10–40) [PROX1, LYVE1]
-                │                       └── Dermis Microvascular Lymphatic Endothelial Cell / dermis microvascular lymphatic vessel endothelial cell*(PCW 10–40) [CCL21]
+                │           ├── Proepicardial Organ (PCW 4–5)[WT1, TBX18]
+                │           │   └── Epicardium (PCW 4–8)[WT1, TCF21]
+                │           │       ├── Mesothelial Cell of Epicardium* (PCW 8–40) [KRT18, WT1]
+                │           │       └── Epicardium Derived Cell* (PCW 6–10) [TCF21]
+                │           │           ├── Cardiac Fibroblast / fibroblast* (PCW 10–40) [COL1A1, DCN]
+                │           │           ├── Vascular Smooth Muscle Cell / smooth muscle cell* (PCW 10–40) [ACTA2, TAGLN]
+                │           │           ├── Pericyte* / Pericyte-like Mesenchymal Cell (Peric_MC)(PCW 10–40) [RGS5, CSPG4]
+                │           │           ├── Coronary Endothelial Cell (PCW 10–40) [PECAM1, VWF, PRSS23]
+                │           │           └── Adipocyte* (PCW 20–40) [FABP4, ADIPOQ]
+                │           │               └── Epicardial Adipocyte* (PCW 20–40)
+                │           │
+                │           └── Vascular Endothelial Cell / endothelial cell of vascular tree* (PCW 8–40) [PECAM1, VWF]
+                │               ├── Capillary Endothelial Cell* (PCW 8–40) [RGCC, CA4]
+                │               ├── Arterial Endothelial Cell / Endothelial Cell of Artery* (PCW 10–40) [SOX17, EFNB2]
+                │               ├── Venous Endothelial Cell / Vein Endothelial Cell* (PCW 10–40) [NR2F2, ACKR1]
+                │               └── Lymphatic Endothelial Cell / Endothelial Cell of Lymphatic Vessel*(PCW 10–40) [PROX1, LYVE1]
+                │                   └── Dermis Microvascular Lymphatic Endothelial Cell / dermis microvascular lymphatic vessel endothelial cell*(PCW 10–40) [CCL21]
                 │
                 └── Ectoderm (PCW 2–3)
                     ├── Neural Lineage [SOX1, PAX6]
@@ -92,3 +93,5 @@ Zygote (Day 0)
                     │       └── Outflow Tract Smooth Muscle Cell* (PCW 8–40) [ACTA2]
                     │
                     └── Epithelial Cell*(PCW 5–40) [EPCAM, KRT8]
+                          !! Origin and identity to be clarified — may refer to epicardial surface or
+                          !! pericardial epithelial cells; lineage from Ectoderm needs verification.
