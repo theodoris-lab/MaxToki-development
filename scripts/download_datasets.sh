@@ -507,6 +507,7 @@ copy_lab_directory() {
     "Human Megakaryocyte Development|/gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/4110056855|03_human_megakaryocyte_development"
     "Fetal vs. Adult Human Epicardium|/gladstone/theodoris/lab/genecorpus_XM/corpus_loom_files/genecorpus_95M_loom/cxg/5500c673-1610-40a0-86d9-64d987ae50e6.loom|04_fetal_vs_adult_human_epicardium.loom"
     "Tyser et al. 2021 Gastrulation Atlas|/gladstone/theodoris/lab/ctheodoris/validation/gastrulation|05_tyser_2021_gastrulation_atlas"
+    "Xu et al. 2023 Organogenesis Atlas|/gladstone/theodoris/lab/dwen/data/organogenesis_data/organogenesis|06_xu_2023_organogenesis_atlas"
   )
 
   log "Source 4: Lab directory"

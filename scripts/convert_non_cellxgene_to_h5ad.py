@@ -142,6 +142,22 @@ DATASETS = [
         Path("source_4_lab_directory/04_fetal_vs_adult_human_epicardium.h5ad"),
         "loom",
     ),
+    Dataset(
+        "source4_tyser_gastrulation",
+        "Lab Directory",
+        "Tyser et al. 2021 gastrulation atlas",
+        DATA_DIR / "source_4_lab_directory/05_tyser_2021_gastrulation_atlas/E-MTAB-9388.loom",
+        Path("source_4_lab_directory/05_tyser_2021_gastrulation_atlas/E-MTAB-9388.h5ad"),
+        "loom",
+    ),
+    Dataset(
+        "source4_xu_organogenesis",
+        "Lab Directory",
+        "Xu et al. 2023 organogenesis atlas (cardiac subset)",
+        DATA_DIR / "source_4_lab_directory/06_xu_2023_organogenesis_atlas/organogenesis_processed_orgcell.loom",
+        Path("source_4_lab_directory/06_xu_2023_organogenesis_atlas/xu_2023_organogenesis_cardiac.h5ad"),
+        "loom",
+    ),
 ]
 
 
