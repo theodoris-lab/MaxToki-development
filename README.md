@@ -4,11 +4,11 @@ Fine-tuning the MaxToki single-cell foundation model on human developmental tran
 
 We start with **cardiac development** as a proof of concept, then expand to other organs.
 
-## Human Heart Development Atlas
+## Human Heart Development Lineage Tree
 
-To guide data curation and model training, we built a [hierarchical cardiac cell-type atlas](documents/human_heart_development_atlas.txt) from publicly available literature on human heart development. The goal was to map how cells differentiate — from the zygote all the way to mature cardiac cell types present at birth — capturing the full developmental trajectory of the human heart.
+To guide data curation and model training, we built a [hierarchical cardiac cell-type lineage tree](documents/human_heart_development_lineage_tree.txt) from publicly available literature on human heart development. The goal was to map how cells differentiate — from the zygote all the way to mature cardiac cell types present at birth — capturing the full developmental trajectory of the human heart.
 
-The atlas is organized as a lineage tree and includes:
+The lineage tree is organized hierarchically and includes:
 - **Differentiation hierarchy** — from zygote → mesoderm → cardiac progenitors → specialized cardiac cell types
 - **PCW** (post-conceptual weeks) — the developmental time window when each cell type emerges or is active
 - **Transcription factors** — key regulators driving each differentiation step, where known from literature
