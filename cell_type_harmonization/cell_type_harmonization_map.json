@@ -1,0 +1,1118 @@
+{
+  "metadata": {
+    "description": "Canonical cell-type harmonization map anchored to human heart development lineage tree",
+    "canonical_count": 50,
+    "tree_anchor_count": 47
+  },
+  "lineage_tree_aliases": {
+    ": Cell Types we have in our dataset": [
+      ": Cell Types we have in our dataset"
+    ],
+    "Cardiac Muscle Cell": [
+      "Cardiac Muscle Cell",
+      "Fetal Cardiomyocyte"
+    ],
+    "Ventricular Cardiomyocytes": [
+      "Ventricular Cardiac Muscle Cell",
+      "Ventricular Cardiomyocytes"
+    ],
+    "Regular Atrial Cardiac Myocyte": [
+      "Regular Atrial Cardiac Myocyte"
+    ],
+    "Endocardial Cell": [
+      "Endocardial Cell",
+      "Endocardial Endothelial Cell"
+    ],
+    "Atrial Septum Endothelial Cell": [
+      "AtrSept_EC",
+      "Atrial Septum Endothelial Cell"
+    ],
+    "Inflow Valve Endothelial Cells": [
+      "Inflow Valve Endothelial Cells"
+    ],
+    "Endocardial Cushion": [
+      "Cushion Mesenchymal Cells",
+      "Endocardial Cushion"
+    ],
+    "Valve Mesenchymal Cells": [
+      "Valve Mesenchymal Cell",
+      "Valve Mesenchymal Cells"
+    ],
+    "Valve Interstitial Cell": [
+      "Valve Interstitial Cell"
+    ],
+    "Outflow Valve Endothelial Cells": [
+      "Outflow Valve Endothelial Cells"
+    ],
+    "Cardiac Mesenchymal Cell": [
+      "Cardiac Mesenchymal Cell"
+    ],
+    "Stromal Cell": [
+      "Stromal Cell"
+    ],
+    "Mesenchymal Stem Cell": [
+      "Mesenchymal Stem Cell"
+    ],
+    "Fibroblast": [
+      "Fibroblast"
+    ],
+    "Hematopoietic Cell": [
+      "Hematopoietic Cell"
+    ],
+    "Myeloid Cell": [
+      "Myeloid Cell"
+    ],
+    "Monocyte": [
+      "Monocyte"
+    ],
+    "Macrophage": [
+      "Macrophage"
+    ],
+    "Neutrophil": [
+      "Neutrophil"
+    ],
+    "Dendritic Cell": [
+      "Dendritic Cell"
+    ],
+    "Professional Antigen Presenting Cell": [
+      "Professional Antigen Presenting Cell"
+    ],
+    "Leukocyte": [
+      "Leukocyte"
+    ],
+    "Innate Lymphoid Cell": [
+      "Innate Lymphoid Cell"
+    ],
+    "T Cell": [
+      "T Cell"
+    ],
+    "Erythroid Progenitor Cell": [
+      "Erythroid Progenitor Cell"
+    ],
+    "Erythroblast": [
+      "Erythroblast"
+    ],
+    "Erythroid Lineage Cell": [
+      "Erythroid Lineage Cell"
+    ],
+    "Erythrocyte": [
+      "Erythrocyte"
+    ],
+    "Mesothelial Cell of Epicardium": [
+      "Mesothelial Cell of Epicardium"
+    ],
+    "Epicardium Derived Cell": [
+      "Epicardium Derived Cell"
+    ],
+    "Cardiac Fibroblast": [
+      "Cardiac Fibroblast",
+      "fibroblast"
+    ],
+    "Vascular Smooth Muscle Cell": [
+      "Vascular Smooth Muscle Cell",
+      "smooth muscle cell"
+    ],
+    "Pericyte": [
+      "Pericyte",
+      "Pericyte-like Mesenchymal Cell"
+    ],
+    "Adipocyte": [
+      "Adipocyte"
+    ],
+    "Epicardial Adipocyte": [
+      "Epicardial Adipocyte"
+    ],
+    "Vascular Endothelial Cell": [
+      "Vascular Endothelial Cell",
+      "endothelial cell of vascular tree"
+    ],
+    "Capillary Endothelial Cell": [
+      "Capillary Endothelial Cell"
+    ],
+    "Arterial Endothelial Cell": [
+      "Arterial Endothelial Cell",
+      "Endothelial Cell of Artery"
+    ],
+    "Venous Endothelial Cell": [
+      "Vein Endothelial Cell",
+      "Venous Endothelial Cell"
+    ],
+    "Lymphatic Endothelial Cell": [
+      "Endothelial Cell of Lymphatic Vessel",
+      "Lymphatic Endothelial Cell"
+    ],
+    "Dermis Microvascular Lymphatic Endothelial Cell": [
+      "Dermis Microvascular Lymphatic Endothelial Cell",
+      "dermis microvascular lymphatic vessel endothelial cell"
+    ],
+    "Neural Cell": [
+      "Neural Cell"
+    ],
+    "Neuron": [
+      "Neuron"
+    ],
+    "Visceromotor Neuron": [
+      "Visceromotor Neuron"
+    ],
+    "Schwann Cell": [
+      "Schwann Cell"
+    ],
+    "Outflow Tract Smooth Muscle Cell": [
+      "Outflow Tract Smooth Muscle Cell"
+    ]
+  },
+  "harmonization_map": {
+    "Adipocyte": {
+      "synonyms": [
+        "adipocyte*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Epicardium Derived Cell",
+        "Adipocyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Adipocyte",
+      "linked_to_lineage_tree": true
+    },
+    "Arterial Endothelial Cell": {
+      "synonyms": [
+        "endothelial cell of artery*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Vascular Endothelial Cell",
+        "Arterial Endothelial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell → Arterial Endothelial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "AV Canal Endocardial Cells": {
+      "synonyms": [
+        "atrioventricular canal"
+      ],
+      "sources": [
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Endothelial / Endocardial Lineage",
+        "Endocardial Cell",
+        "AV Canal Endocardial Cells"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells",
+      "linked_to_lineage_tree": true
+    },
+    "Capillary Endothelial Cell": {
+      "synonyms": [
+        "capillary endothelial cell*",
+        "Microvascular Endothelial Cell (MicroVasc_EC)"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Vascular Endothelial Cell",
+        "Capillary Endothelial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell → Capillary Endothelial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Cardiac Fibroblast": {
+      "synonyms": [
+        "fibroblast*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Epicardium Derived Cell",
+        "Cardiac Fibroblast"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Cardiac Fibroblast",
+      "linked_to_lineage_tree": true
+    },
+    "Cardiac Mesenchymal Cell": {
+      "synonyms": [
+        "cardiac mesenchymal cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Mesenchymal and Stromal Lineage",
+        "Cardiac Mesenchymal Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Cardiac Mesenchymal Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Cardiac Muscle Cell": {
+      "synonyms": [
+        "cardiac muscle cell*",
+        "cardiomyocyte",
+        "fetal cardiomyocyte*",
+        "Immature Cardiomyocyte (Immat_CM)",
+        "Proliferating Cardiomyocyte (Prol_CM)"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Cardiomyocyte Lineage",
+        "Cardiac Muscle Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Cardiogenic Mesoderm": {
+      "synonyms": [
+        "Second heart field (SHF)"
+      ],
+      "sources": [
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm",
+      "linked_to_lineage_tree": true
+    },
+    "Dendritic Cell": {
+      "synonyms": [
+        "dendritic cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell",
+        "Dendritic Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell → Dendritic Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Dermis Microvascular Lymphatic Endothelial Cell": {
+      "synonyms": [
+        "dermis microvascular lymphatic vessel endothelial cell"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Vascular Endothelial Cell",
+        "Lymphatic Endothelial Cell",
+        "Dermis Microvascular Lymphatic Endothelial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell → Lymphatic Endothelial Cell → Dermis Microvascular Lymphatic Endothelial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Ectoderm": {
+      "synonyms": [
+        "ectodermal cell"
+      ],
+      "sources": [
+        "Tyser"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Ectoderm"
+      ],
+      "lineage_path_str": "Epiblast → Ectoderm",
+      "linked_to_lineage_tree": true
+    },
+    "Endocardial Cell": {
+      "synonyms": [
+        "endocardial cell*",
+        "Endocardial Endothelial Cell* (Endoc_EC)",
+        "endocardium"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Endothelial / Endocardial Lineage",
+        "Endocardial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Endocardial Cushion": {
+      "synonyms": [
+        "Endocardial Cushion Endothelial Cell (EndocCush_EC)",
+        "endocardial derived cell"
+      ],
+      "sources": [
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Endothelial / Endocardial Lineage",
+        "Endocardial Cell",
+        "AV Canal Endocardial Cells",
+        "Endocardial Cushion"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells → Endocardial Cushion",
+      "linked_to_lineage_tree": true
+    },
+    "Epiblast": {
+      "synonyms": [
+        "epiblast cell"
+      ],
+      "sources": [
+        "Tyser"
+      ],
+      "lineage_path": [
+        "Epiblast"
+      ],
+      "lineage_path_str": "Epiblast",
+      "linked_to_lineage_tree": true
+    },
+    "Epicardial Adipocyte": {
+      "synonyms": [
+        "epicardial adipocyte*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Epicardium Derived Cell",
+        "Adipocyte",
+        "Epicardial Adipocyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Adipocyte → Epicardial Adipocyte",
+      "linked_to_lineage_tree": true
+    },
+    "Epicardium Derived Cell": {
+      "synonyms": [
+        "epicardial derived cell",
+        "Epicardium-Derived Cell (EPDC)"
+      ],
+      "sources": [
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Epicardium Derived Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Erythroblast": {
+      "synonyms": [
+        "erythroblast*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Erythroid Lineage",
+        "Erythroblast"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Erythroid Lineage → Erythroblast",
+      "linked_to_lineage_tree": true
+    },
+    "Erythrocyte": {
+      "synonyms": [
+        "erythrocyte (CS7)",
+        "erythrocyte*"
+      ],
+      "sources": [
+        "CXG",
+        "Tyser"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Erythroid Lineage",
+        "Erythrocyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Erythroid Lineage → Erythrocyte",
+      "linked_to_lineage_tree": true
+    },
+    "Erythroid Lineage Cell": {
+      "synonyms": [
+        "erythroid lineage cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Erythroid Lineage",
+        "Erythroid Lineage Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Erythroid Lineage → Erythroid Lineage Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Erythroid Progenitor Cell": {
+      "synonyms": [
+        "erythroid progenitor cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Erythroid Lineage",
+        "Erythroid Progenitor Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Erythroid Lineage → Erythroid Progenitor Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Fibroblast": {
+      "synonyms": [
+        "Annulus Fibrosus Fibroblast (AnnFibr_FB)",
+        "Interstitial Fibroblast (Int_FB)",
+        "Outflow Tract Fibroblast (OFT_FB)"
+      ],
+      "sources": [
+        "Lázár"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Mesenchymal and Stromal Lineage",
+        "Fibroblast"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Fibroblast",
+      "linked_to_lineage_tree": true
+    },
+    "Hematopoietic Cell": {
+      "synonyms": [
+        "cord blood hematopoietic stem cell",
+        "hematopoietic cell*",
+        "hemogenic endothelial progenitor",
+        "megakaryocyte"
+      ],
+      "sources": [
+        "CXG",
+        "Tyser"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Innate Lymphoid Cell": {
+      "synonyms": [
+        "innate lymphoid cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Innate Lymphoid Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Innate Lymphoid Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Leukocyte": {
+      "synonyms": [
+        "leukocyte*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell",
+        "Leukocyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell → Leukocyte",
+      "linked_to_lineage_tree": true
+    },
+    "Lymphatic Endothelial Cell": {
+      "synonyms": [
+        "endothelial cell of lymphatic vessel*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Vascular Endothelial Cell",
+        "Lymphatic Endothelial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell → Lymphatic Endothelial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Macrophage": {
+      "synonyms": [
+        "macrophage*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell",
+        "Monocyte",
+        "Macrophage"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell → Monocyte → Macrophage",
+      "linked_to_lineage_tree": true
+    },
+    "Mesenchymal Stem Cell": {
+      "synonyms": [
+        "mesenchymal stem cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Mesenchymal and Stromal Lineage",
+        "Mesenchymal Stem Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Mesenchymal Stem Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Mesoderm": {
+      "synonyms": [
+        "advanced mesoderm",
+        "axial mesoderm",
+        "emergent mesoderm",
+        "nascent mesoderm",
+        "yolk sac mesoderm"
+      ],
+      "sources": [
+        "Tyser"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm",
+      "linked_to_lineage_tree": true
+    },
+    "Mesothelial Cell of Epicardium": {
+      "synonyms": [
+        "Epicardial Cell (EpC)",
+        "epicardium",
+        "mesothelial cell of epicardium*"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Mesothelial Cell of Epicardium"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Mesothelial Cell of Epicardium",
+      "linked_to_lineage_tree": true
+    },
+    "Monocyte": {
+      "synonyms": [
+        "monocyte*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell",
+        "Monocyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell → Monocyte",
+      "linked_to_lineage_tree": true
+    },
+    "Myeloid Cell": {
+      "synonyms": [
+        "myeloid cell*",
+        "Myeloid Cell* (MyC)"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell",
+        "Myeloid Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell → Myeloid Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Neural Cell": {
+      "synonyms": [
+        "neural cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Ectoderm",
+        "Neural Lineage",
+        "Neural Cell"
+      ],
+      "lineage_path_str": "Epiblast → Ectoderm → Neural Lineage → Neural Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Neuron": {
+      "synonyms": [
+        "neuron*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Ectoderm",
+        "Neural Lineage",
+        "Neuron"
+      ],
+      "lineage_path_str": "Epiblast → Ectoderm → Neural Lineage → Neuron",
+      "linked_to_lineage_tree": true
+    },
+    "Neutrophil": {
+      "synonyms": [
+        "neutrophil*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Hematopoietic Cell",
+        "Neutrophil"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell → Neutrophil",
+      "linked_to_lineage_tree": true
+    },
+    "Outflow Tract Smooth Muscle Cell": {
+      "synonyms": [
+        "Outflow Tract Smooth Muscle Cell* (OFT_SMC)"
+      ],
+      "sources": [
+        "Lázár"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Ectoderm",
+        "Neural Crest",
+        "Cardiac Neural Crest Cell",
+        "Outflow Tract Smooth Muscle Cell"
+      ],
+      "lineage_path_str": "Epiblast → Ectoderm → Neural Crest → Cardiac Neural Crest Cell → Outflow Tract Smooth Muscle Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Pericyte": {
+      "synonyms": [
+        "pericyte (myocardium)",
+        "pericyte*",
+        "Pericyte* (PC)",
+        "Pericyte-like Mesenchymal Cell / Pericyte* (Peric_MC)"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Epicardium Derived Cell",
+        "Pericyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Pericyte",
+      "linked_to_lineage_tree": true
+    },
+    "Primitive Streak": {
+      "synonyms": [
+        "primitive streak"
+      ],
+      "sources": [
+        "Tyser"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak",
+      "linked_to_lineage_tree": true
+    },
+    "Professional Antigen Presenting Cell": {
+      "synonyms": [
+        "professional antigen presenting cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Professional Antigen Presenting Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Professional Antigen Presenting Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Regular Atrial Cardiac Myocyte": {
+      "synonyms": [
+        "atria cardiomyocyte",
+        "Mature Atrial Cardiomyocyte (Mat_aCM)",
+        "Metabolically Active Atrial Cardiomyocyte (MetAct_aCM)",
+        "regular atrial cardiac myocyte*"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Cardiomyocyte Lineage",
+        "Cardiac Muscle Cell",
+        "Regular Atrial Cardiac Myocyte"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Regular Atrial Cardiac Myocyte",
+      "linked_to_lineage_tree": true
+    },
+    "SA Node Pacemaker Cell": {
+      "synonyms": [
+        "sinoatrial node (SAN)"
+      ],
+      "sources": [
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Cardiomyocyte Lineage",
+        "Cardiac Muscle Cell",
+        "Regular Atrial Cardiac Myocyte",
+        "SA Node Pacemaker Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Regular Atrial Cardiac Myocyte → SA Node Pacemaker Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Schwann Cell": {
+      "synonyms": [
+        "Schwann cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Ectoderm",
+        "Neural Lineage",
+        "Schwann Cell"
+      ],
+      "lineage_path_str": "Epiblast → Ectoderm → Neural Lineage → Schwann Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Stromal Cell": {
+      "synonyms": [
+        "stromal cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Mesenchymal and Stromal Lineage",
+        "Stromal Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Stromal Cell",
+      "linked_to_lineage_tree": true
+    },
+    "T Cell": {
+      "synonyms": [
+        "T cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Hematopoietic Mesoderm",
+        "Lymphoid Lineage",
+        "T Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Lymphoid Lineage → T Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Valve Interstitial Cell": {
+      "synonyms": [
+        "valve interstitial cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Endothelial / Endocardial Lineage",
+        "Endocardial Cell",
+        "AV Canal Endocardial Cells",
+        "Endocardial Cushion",
+        "Valve Mesenchymal Cells",
+        "Valve Interstitial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells → Endocardial Cushion → Valve Mesenchymal Cells → Valve Interstitial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Valve Mesenchymal Cells": {
+      "synonyms": [
+        "Valve Mesenchymal Cell (Valve_MC)"
+      ],
+      "sources": [
+        "Lázár"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Endothelial / Endocardial Lineage",
+        "Endocardial Cell",
+        "AV Canal Endocardial Cells",
+        "Endocardial Cushion",
+        "Valve Mesenchymal Cells"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells → Endocardial Cushion → Valve Mesenchymal Cells",
+      "linked_to_lineage_tree": true
+    },
+    "Vascular Endothelial Cell": {
+      "synonyms": [
+        "endothelial cell",
+        "endothelial cell of vascular tree"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Vascular Endothelial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Vascular Smooth Muscle Cell": {
+      "synonyms": [
+        "Coronary Artery Smooth Muscle Cell (CA_SMC)",
+        "smooth muscle cell"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Proepicardial Organ",
+        "Epicardium",
+        "Epicardium Derived Cell",
+        "Vascular Smooth Muscle Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Vascular Smooth Muscle Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Venous Endothelial Cell": {
+      "synonyms": [
+        "vein endothelial cell*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Splanchnic Mesoderm",
+        "Vascular Endothelial Cell",
+        "Venous Endothelial Cell"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell → Venous Endothelial Cell",
+      "linked_to_lineage_tree": true
+    },
+    "Ventricular Cardiomyocytes": {
+      "synonyms": [
+        "Mature Ventricular Cardiomyocyte (Mat_vCM)",
+        "Metabolically Active Ventricular Cardiomyocyte 1 (MetAct_vCM_1)",
+        "Metabolically Active Ventricular Cardiomyocyte 2 (MetAct_vCM_2)",
+        "ventricle cardiomyocyte",
+        "ventricular cardiac muscle cell*"
+      ],
+      "sources": [
+        "CXG",
+        "Lázár",
+        "Xu"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Primitive Streak",
+        "Mesoderm",
+        "Cardiogenic Mesoderm",
+        "Cardiomyocyte Lineage",
+        "Cardiac Muscle Cell",
+        "Ventricular Cardiomyocytes"
+      ],
+      "lineage_path_str": "Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Ventricular Cardiomyocytes",
+      "linked_to_lineage_tree": true
+    },
+    "Visceromotor Neuron": {
+      "synonyms": [
+        "visceromotor neuron*"
+      ],
+      "sources": [
+        "CXG"
+      ],
+      "lineage_path": [
+        "Epiblast",
+        "Ectoderm",
+        "Neural Lineage",
+        "Neuron",
+        "Visceromotor Neuron"
+      ],
+      "lineage_path_str": "Epiblast → Ectoderm → Neural Lineage → Neuron → Visceromotor Neuron",
+      "linked_to_lineage_tree": true
+    }
+  }
+}

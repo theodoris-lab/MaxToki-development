@@ -1,0 +1,46 @@
+observed_label,source,normalized_observed_label,canonical_tree_label,mapping_status,mapping_strategy,confidence_tier,lineage_path
+advanced mesoderm,Tyser,advanced mesoderm,Mesoderm,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm
+Annulus Fibrosus Fibroblast (AnnFibr_FB),Lázár,annulus fibrosus fibroblast,Fibroblast,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Fibroblast
+atria cardiomyocyte,Xu,atria cardiomyocyte,Regular Atrial Cardiac Myocyte,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Regular Atrial Cardiac Myocyte
+atrioventricular canal,Xu,atrioventricular canal,AV Canal Endocardial Cells,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells
+axial mesoderm,Tyser,axial mesoderm,Mesoderm,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm
+cardiomyocyte,Xu,cardiomyocyte,Cardiac Muscle Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell
+cell of skeletal muscle,CXG,cell of skeletal muscle,UNMAPPED,unmapped,unmapped,none,
+cord blood hematopoietic stem cell,CXG,cord blood hematopoietic stem cell,Hematopoietic Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell
+Coronary Artery Smooth Muscle Cell (CA_SMC),Lázár,coronary artery smooth muscle cell,Vascular Smooth Muscle Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Vascular Smooth Muscle Cell
+ectodermal cell,Tyser,ectodermal cell,Ectoderm,mapped,manual_override,medium,Epiblast → Ectoderm
+emergent mesoderm,Tyser,emergent mesoderm,Mesoderm,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm
+Endocardial Cushion Endothelial Cell (EndocCush_EC),Lázár,endocardial cushion endothelial cell,Endocardial Cushion,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells → Endocardial Cushion
+endocardial derived cell,Xu,endocardial derived cell,Endocardial Cushion,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell → AV Canal Endocardial Cells → Endocardial Cushion
+endocardium,Xu,endocardium,Endocardial Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Endothelial / Endocardial Lineage → Endocardial Cell
+endodermal cell,Tyser,endodermal cell,UNMAPPED,unmapped,manual_override,medium,
+endothelial cell,CXG,endothelial cell,Vascular Endothelial Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell
+epiblast cell,Tyser,epiblast cell,Epiblast,mapped,manual_override,medium,Epiblast
+Epicardial Cell (EpC),Lázár,epicardial cell,Mesothelial Cell of Epicardium,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Mesothelial Cell of Epicardium
+epicardial derived cell,Xu,epicardial derived cell,Epicardium Derived Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell
+epicardium,Xu,epicardium,Mesothelial Cell of Epicardium,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Mesothelial Cell of Epicardium
+epithelial cell*,CXG,epithelial cell,UNMAPPED,unmapped,unmapped,none,
+Heart-Lung Atlas Excluded 1 (HL_excl_1),Lázár,heart lung atlas excluded 1,UNMAPPED,unmapped,manual_override,medium,
+Heart-Lung Atlas Excluded 2 (HL_excl_2),Lázár,heart lung atlas excluded 2,UNMAPPED,unmapped,manual_override,medium,
+hemogenic endothelial progenitor,Tyser,hemogenic endothelial progenitor,Hematopoietic Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell
+Immature Cardiomyocyte (Immat_CM),Lázár,immature cardiomyocyte,Cardiac Muscle Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell
+Interstitial Fibroblast (Int_FB),Lázár,interstitial fibroblast,Fibroblast,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Fibroblast
+Mature Atrial Cardiomyocyte (Mat_aCM),Lázár,mature atrial cardiomyocyte,Regular Atrial Cardiac Myocyte,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Regular Atrial Cardiac Myocyte
+Mature Ventricular Cardiomyocyte (Mat_vCM),Lázár,mature ventricular cardiomyocyte,Ventricular Cardiomyocytes,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Ventricular Cardiomyocytes
+megakaryocyte,CXG,megakaryocyte,Hematopoietic Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Hematopoietic Mesoderm → Hematopoietic Cell
+Metabolically Active Atrial Cardiomyocyte (MetAct_aCM),Lázár,metabolically active atrial cardiomyocyte,Regular Atrial Cardiac Myocyte,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Regular Atrial Cardiac Myocyte
+Metabolically Active Ventricular Cardiomyocyte 1 (MetAct_vCM_1),Lázár,metabolically active ventricular cardiomyocyte 1,Ventricular Cardiomyocytes,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Ventricular Cardiomyocytes
+Metabolically Active Ventricular Cardiomyocyte 2 (MetAct_vCM_2),Lázár,metabolically active ventricular cardiomyocyte 2,Ventricular Cardiomyocytes,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Ventricular Cardiomyocytes
+Microvascular Endothelial Cell (MicroVasc_EC),Lázár,microvascular endothelial cell,Capillary Endothelial Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Vascular Endothelial Cell → Capillary Endothelial Cell
+nascent mesoderm,Tyser,nascent mesoderm,Mesoderm,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm
+Outflow Tract Fibroblast (OFT_FB),Lázár,outflow tract fibroblast,Fibroblast,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Mesenchymal and Stromal Lineage → Fibroblast
+Pericyte-like Mesenchymal Cell / Pericyte* (Peric_MC),Lázár,pericyte like mesenchymal cell pericyte,Pericyte,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Splanchnic Mesoderm → Proepicardial Organ → Epicardium → Epicardium Derived Cell → Pericyte
+primitive streak,Tyser,primitive streak,Primitive Streak,mapped,manual_override,medium,Epiblast → Primitive Streak
+primordial germ cell,CXG,primordial germ cell,UNMAPPED,unmapped,unmapped,none,
+Proliferating Cardiomyocyte (Prol_CM),Lázár,proliferating cardiomyocyte,Cardiac Muscle Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell
+Second heart field (SHF),Xu,second heart field,Cardiogenic Mesoderm,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm
+sinoatrial node (SAN),Xu,sinoatrial node,SA Node Pacemaker Cell,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Regular Atrial Cardiac Myocyte → SA Node Pacemaker Cell
+unassigned (cluster 0),Lázár,unassigned,UNMAPPED,unmapped,manual_override,medium,
+unknown,CXG,unknown,UNMAPPED,unmapped,manual_override,medium,
+ventricle cardiomyocyte,Xu,ventricle cardiomyocyte,Ventricular Cardiomyocytes,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm → Cardiogenic Mesoderm → Cardiomyocyte Lineage → Cardiac Muscle Cell → Ventricular Cardiomyocytes
+yolk sac mesoderm,Tyser,yolk sac mesoderm,Mesoderm,mapped,manual_override,medium,Epiblast → Primitive Streak → Mesoderm
