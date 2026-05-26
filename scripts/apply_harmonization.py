@@ -17,10 +17,12 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import re
-import unicodedata
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import normalize_label, strip_accents  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Dataset registry
@@ -59,26 +61,6 @@ _H5AD_EXTRA: Dict[str, Tuple[str, str, str]] = {
 }
 
 # ---------------------------------------------------------------------------
-# Label normalisation (must match build_cell_type_harmonization.py exactly)
-# ---------------------------------------------------------------------------
-
-def _strip_accents(text: str) -> str:
-    return "".join(
-        c for c in unicodedata.normalize("NFKD", text)
-        if not unicodedata.combining(c)
-    )
-
-
-def _normalize(text: str) -> str:
-    text = text.strip().replace("*", "")
-    text = re.sub(r"['`\"]", "'", text)
-    text = re.sub(r"\(.*?\)", " ", text)
-    text = text.replace("/", " ").replace("-", " ")
-    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
-    return re.sub(r"\s+", " ", text).strip().lower()
-
-
-# ---------------------------------------------------------------------------
 # Load lookup from harmonization outputs
 # ---------------------------------------------------------------------------
 
@@ -110,18 +92,18 @@ def load_lookup(csv_path: Path, json_path: Path) -> Dict[str, _LookupEntry]:
     for canonical, payload in data.get("harmonization_map", {}).items():
         path_str = payload.get("lineage_path_str", "")
         # Also index the canonical itself (high confidence)
-        norm_canon = _normalize(canonical)
+        norm = normalize_label(canonical)
         if norm_canon not in lookup:
             lookup[norm_canon] = (canonical, "high", path_str)
         # Synonyms at medium confidence as fallback
         for syn in payload.get("synonyms", []):
-            norm_syn = _normalize(syn)
+            norm_syn = normalize_label(syn)
             if norm_syn not in lookup:
                 lookup[norm_syn] = (canonical, "medium", path_str)
 
     # Merge h5ad-specific extras (lower priority than CSV/JSON)
     for raw_label, entry in _H5AD_EXTRA.items():
-        norm = _normalize(raw_label)
+        norm = normalize_label(raw_label)
         if norm not in lookup:
             lookup[norm] = entry
 
@@ -140,7 +122,7 @@ def _map_cell_types(
     confidences: List[str] = []
     paths: List[str] = []
     for ct in cell_types:
-        entry = lookup.get(_normalize(str(ct)))
+        entry = lookup.get(normalize_label(str(ct)))
         if entry:
             canon, conf, path = entry
             harmonized.append(canon)

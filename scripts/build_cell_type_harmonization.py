@@ -12,11 +12,14 @@ import argparse
 import csv
 import json
 import re
-import unicodedata
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import normalize_label, strip_accents  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -237,26 +240,6 @@ class TreeEntry:
     canonical: str
     aliases: Set[str]
     raw_line: str
-
-
-def strip_accents(text: str) -> str:
-    """Convert accented characters to ASCII equivalents (e.g. á → a)."""
-    return "".join(
-        c for c in unicodedata.normalize("NFKD", text)
-        if not unicodedata.combining(c)
-    )
-
-
-def normalize_label(text: str) -> str:
-    text = text.strip()
-    text = text.replace("*", "")
-    text = re.sub(r"[’`\"]", "'", text)
-    text = re.sub(r"\(.*?\)", " ", text)
-    text = text.replace("/", " ")
-    text = text.replace("-", " ")
-    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
-    text = re.sub(r"\s+", " ", text).strip().lower()
-    return text
 
 
 def clean_tree_cell_type_segment(line: str) -> str:
