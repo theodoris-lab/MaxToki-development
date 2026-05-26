@@ -52,3 +52,4 @@ slurm-*.out
 
 # Generated report outputs (local scratch)
 dump/
+code_repository_best_practices.txt
