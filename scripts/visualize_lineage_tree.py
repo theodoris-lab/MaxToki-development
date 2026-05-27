@@ -20,7 +20,7 @@ from pathlib import Path
 #   pcw      : developmental window string (e.g. "PCW 5–40"), optional
 #   missing  : True → not found in any dataset (greyed out, ✗)
 #   datasets : {source: [(author_label, cell_count), ...]}
-#              Valid sources: "CXG" | "Tyser" | "Xu" | "Lazar_HL" | "Lazar_DL"
+#              Valid sources: "CXG" | "Tyser" | "Xu" | "Lazar_DL"
 #   children : [child_node, ...]
 
 TREE: dict = {
@@ -82,11 +82,6 @@ TREE: dict = {
                                                             ("fetal cardiomyocyte", 1_310),
                                                         ],
                                                         "Xu": [("cardiomyocyte", 363)],
-                                                        "Lazar_HL": [
-                                                            ("Immature Cardiomyocyte (Immat_CM)", 1_285),
-                                                            ("Proliferating Cardiomyocyte (Prol_CM)", 7_475),
-                                                            ("High TMSB10 Cluster 1 (TMSB10high_C_1)", 1_998),
-                                                        ],
                                                     },
                                                     "children": [
                                                         {
@@ -96,11 +91,6 @@ TREE: dict = {
                                                             "datasets": {
                                                                 "CXG": [("ventricular cardiac muscle cell", 3_203)],
                                                                 "Xu": [("ventricle cardiomyocyte", 972)],
-                                                                "Lazar_HL": [
-                                                                    ("Mature Ventricular CM (Mat_vCM)", 7_533),
-                                                                    ("MetAct_vCM_1", 3_857),
-                                                                    ("MetAct_vCM_2", 8_315),
-                                                                ],
                                                             },
                                                             "children": [
                                                                 {
@@ -147,10 +137,6 @@ TREE: dict = {
                                                             "datasets": {
                                                                 "CXG": [("regular atrial cardiac myocyte", 121)],
                                                                 "Xu": [("atria cardiomyocyte", 595)],
-                                                                "Lazar_HL": [
-                                                                    ("Mature Atrial CM (Mat_aCM)", 1_201),
-                                                                    ("Metabolically Active Atrial CM (MetAct_aCM)", 3_321),
-                                                                ],
                                                             },
                                                             "children": [
                                                                 {"name": "Left Atrial CM", "pcw": "", "missing": True, "datasets": {}, "children": []},
@@ -205,7 +191,6 @@ TREE: dict = {
                                                     "datasets": {
                                                         "CXG": [("endocardial cell", 10_932)],
                                                         "Xu": [("endocardium", 1_020)],
-                                                        "Lazar_HL": [("Endocardial Endothelial Cell (Endoc_EC)", 6_994)],
                                                     },
                                                     "children": [
                                                         {
@@ -249,7 +234,6 @@ TREE: dict = {
                                                                             "missing": False,
                                                                             "datasets": {
                                                                                 "Xu": [("endocardial derived cell", 503)],
-                                                                                "Lazar_HL": [("Endocardial Cushion EC (EndocCush_EC)", 304)],
                                                                             },
                                                                             "children": [
                                                                                 {
@@ -257,7 +241,6 @@ TREE: dict = {
                                                                                     "pcw": "PCW 6–8",
                                                                                     "missing": False,
                                                                                     "datasets": {
-                                                                                        "Lazar_HL": [("Valve Mesenchymal Cell (Valve_MC)", 3_206)],
                                                                                         "Lazar_DL": [
                                                                                             ("Valve_MC_1", 961),
                                                                                             ("Valve_MC_2", 1_540),
@@ -379,13 +362,6 @@ TREE: dict = {
                                                     "pcw": "PCW 10–40",
                                                     "missing": False,
                                                     "datasets": {
-                                                        "Lazar_HL": [
-                                                            ("Annulus Fibrosus Fibroblast (AnnFibr_FB)", 1_345),
-                                                            ("Interstitial Fibroblast (Int_FB)", 14_154),
-                                                            ("Outflow Tract Fibroblast (OFT_FB)", 12_581),
-                                                            ("PDE4Chigh Fibroblast (PDE4Chigh_FB)", 563),
-                                                            ("Proliferating Fibroblast (Prol_FB)", 324),
-                                                        ],
                                                         "Lazar_DL": [
                                                             ("Adv_FB_1", 2_129), ("Adv_FB_2", 918),
                                                             ("Int_FB_1", 2_463), ("Int_FB_2", 1_612), ("Int_FB_3", 257),
@@ -424,7 +400,6 @@ TREE: dict = {
                                                             "missing": False,
                                                             "datasets": {
                                                                 "CXG": [("myeloid cell", 4_621)],
-                                                                "Lazar_HL": [("Myeloid Cell (MyC)", 2_016)],
                                                             },
                                                             "children": [],
                                                         },
@@ -479,7 +454,6 @@ TREE: dict = {
                                                     "missing": False,
                                                     "datasets": {
                                                         "CXG": [("innate lymphoid cell", 3_333)],
-                                                        "Lazar_HL": [("Lymphoid Cell (LyC)", 667)],
                                                     },
                                                     "children": [],
                                                 },
@@ -567,7 +541,6 @@ TREE: dict = {
                                                             "datasets": {
                                                                 "CXG": [("mesothelial cell of epicardium", 2_276)],
                                                                 "Xu": [("epicardium", 252)],
-                                                                "Lazar_HL": [("Epicardial Cell (EpC)", 924)],
                                                             },
                                                             "children": [],
                                                         },
@@ -577,7 +550,6 @@ TREE: dict = {
                                                             "missing": False,
                                                             "datasets": {
                                                                 "Xu": [("epicardial derived cell", 785)],
-                                                                "Lazar_HL": [("Epicardium-Derived Cell (EPDC)", 1_956)],
                                                                 "Lazar_DL": [("EPDC_1", 552), ("EPDC_2", 1_697)],
                                                             },
                                                             "children": [
@@ -594,7 +566,6 @@ TREE: dict = {
                                                                     "missing": False,
                                                                     "datasets": {
                                                                         "CXG": [("smooth muscle cell", 5_859)],
-                                                                        "Lazar_HL": [("Coronary Artery SMC (CA_SMC)", 3_571)],
                                                                     },
                                                                     "children": [],
                                                                 },
@@ -605,10 +576,6 @@ TREE: dict = {
                                                                     "datasets": {
                                                                         "CXG": [("pericyte", 1_134)],
                                                                         "Xu": [("pericyte (myocardium)", 17)],
-                                                                        "Lazar_HL": [
-                                                                            ("Pericyte (PC)", 501),
-                                                                            ("Pericyte-like MC (Peric_MC)", 249),
-                                                                        ],
                                                                         "Lazar_DL": [("Pericyte-like MC (Peric_MC)", 1_431)],
                                                                     },
                                                                     "children": [],
@@ -650,10 +617,6 @@ TREE: dict = {
                                                     ("endothelial cell", 9_030),
                                                     ("endothelial cell of vascular tree", 6_100),
                                                 ],
-                                                "Lazar_HL": [
-                                                    ("PDE4Chigh EC (PDE4Chigh_EC)", 1_658),
-                                                    ("High TMSB10 Cluster 2 (TMSB10high_C_2)", 698),
-                                                ],
                                             },
                                             "children": [
                                                 {
@@ -662,7 +625,6 @@ TREE: dict = {
                                                     "missing": False,
                                                     "datasets": {
                                                         "CXG": [("capillary endothelial cell", 1_567)],
-                                                        "Lazar_HL": [("Microvascular EC (MicroVasc_EC)", 4_553)],
                                                     },
                                                     "children": [],
                                                 },
@@ -672,7 +634,6 @@ TREE: dict = {
                                                     "missing": False,
                                                     "datasets": {
                                                         "CXG": [("endothelial cell of artery", 903)],
-                                                        "Lazar_HL": [("Macrovascular EC (MacroVasc_EC)", 2_120)],
                                                     },
                                                     "children": [],
                                                 },
@@ -695,7 +656,6 @@ TREE: dict = {
                                                     "missing": False,
                                                     "datasets": {
                                                         "CXG": [("endothelial cell of lymphatic vessel", 820)],
-                                                        "Lazar_HL": [("Lymphatic EC (LEC)", 444)],
                                                     },
                                                     "children": [
                                                         {
@@ -745,7 +705,6 @@ TREE: dict = {
                             "missing": False,
                             "datasets": {
                                 "CXG": [("neuron", 2_394)],
-                                "Lazar_HL": [("Neuroblast-Neuron (NB-N)", 362)],
                             },
                             "children": [
                                 {
@@ -763,7 +722,6 @@ TREE: dict = {
                             "missing": False,
                             "datasets": {
                                 "CXG": [("Schwann cell", 669)],
-                                "Lazar_HL": [("Schwann Cell Precursor / Glia (SCP-GC)", 744)],
                             },
                             "children": [],
                         },
@@ -784,10 +742,8 @@ TREE: dict = {
                                 {
                                     "name": "Outflow Tract SMC",
                                     "pcw": "PCW 8–40",
-                                    "missing": False,
-                                    "datasets": {
-                                        "Lazar_HL": [("Outflow Tract SMC (OFT_SMC)", 3_507)]
-                                    },
+                                    "missing": True,
+                                    "datasets": {},
                                     "children": [],
                                 }
                             ],
@@ -806,7 +762,6 @@ DATASET_META: dict[str, tuple[str, str]] = {
     "CXG":      ("cxg",      "CXG"),
     "Tyser":    ("tyser",    "Tyser"),
     "Xu":       ("xu",       "Xu"),
-    "Lazar_HL": ("lazar-hl", "Lázár HL"),
     "Lazar_DL": ("lazar-dl", "Lázár DL"),
 }
 
@@ -1043,7 +998,6 @@ def main() -> None:
             ("#4285f4", "CXG — CellxGene heart-dev subset"),
             ("#f59e0b", "Tyser — Tyser et al. 2021"),
             ("#34a853", "Xu — Xu et al. 2023/24"),
-            ("#8b5cf6", "Lázár HL — Heart-Lung Atlas (35 clusters)"),
             ("#ec4899", "Lázár DL — Deep-Learning sub-atlas (74 clusters)"),
         ]
     )

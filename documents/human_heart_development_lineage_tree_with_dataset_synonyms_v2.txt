@@ -11,7 +11,6 @@ Legend:
  → CXG:       label(s) in CellxGene Heart Development Subset
  → Tyser:     label(s) in Tyser et al. 2021
  → Xu:        label(s) in Xu et al. 2024
- → Lázár(HL): Heart-Lung Atlas tier — 35 coarse clusters
  → Lázár(DL): Deep Learning sub-atlas tier — 74 fine-grained clusters
                (same cells at higher resolution; NOT double-counted in totals)
  Cell counts shown in parentheses: (n)
@@ -40,18 +39,12 @@ Zygote (Day 0) ✗
                 │       │   │   └── Cardiac Muscle Cell / Fetal Cardiomyocyte (PCW 2–20) [TNNT2, ACTC1, MYH6, MYL7, MYL2]
                 │       │   │       → CXG:       cardiac muscle cell (121,959), fetal cardiomyocyte (1,310)
                 │       │   │       → Xu:        cardiomyocyte (363)
-                │       │   │       → Lázár(HL): Immature Cardiomyocyte (Immat_CM) (1,285),
-                │       │   │                    Proliferating Cardiomyocyte (Prol_CM) (7,475),
-                │       │   │                    High TMSB10 Cluster 1 (TMSB10high_C_1) (1,998)
                 │       │   │       → Lázár(DL): Immat_CM_1 (2,894), Immat_CM_2 (2,179),
                 │       │   │                    Immat_CM_3 (1,993), Prol_CM_1 (619), Prol_CM_2 (808)
                 │       │   │       │
                 │       │   │       ├── Ventricular Cardiomyocytes / Ventricular Cardiac Muscle Cell (PCW 3–40) [IRX4, MYH7]
                 │       │   │       │   → CXG:       ventricular cardiac muscle cell (3,203)
                 │       │   │       │   → Xu:        ventricle cardiomyocyte (972)
-                │       │   │       │   → Lázár(HL): Mature Ventricular Cardiomyocyte (Mat_vCM) (7,533),
-                │       │   │       │                Metabolically Active Ventricular CM 1 (MetAct_vCM_1) (3,857),
-                │       │   │       │                Metabolically Active Ventricular CM 2 (MetAct_vCM_2) (8,315)
                 │       │   │       │   → Lázár(DL): vCM_1 (349), vCM_2 (535), vCM_3 (277),
                 │       │   │       │                vCM_4 (1,552), vCM_5 (1,955), vCM_6 (2,085)
                 │       │   │       │   ├── AV Bundle / Bundle Branch CM (PCW 10–40) [IRX3]
@@ -66,8 +59,6 @@ Zygote (Day 0) ✗
                 │       │   │       └── Regular Atrial Cardiac Myocyte (PCW 3–40) [NR2F2, MYH6]
                 │       │   │           → CXG:       regular atrial cardiac myocyte (121)
                 │       │   │           → Xu:        atria cardiomyocyte (595)
-                │       │   │           → Lázár(HL): Mature Atrial Cardiomyocyte (Mat_aCM) (1,201),
-                │       │   │                        Metabolically Active Atrial CM (MetAct_aCM) (3,321)
                 │       │   │           → Lázár(DL): Left Atrial CM (Left_aCM) (823),
                 │       │   │                        Right Atrial CM (Right_aCM) (1,635),
                 │       │   │                        Conducting Atrial CM (Cond_aCM) (1,319)
@@ -84,7 +75,6 @@ Zygote (Day 0) ✗
                 │       │   │   └── Endocardial Cell / Endocardial Endothelial Cell (PCW 5–40) [NFATC1, NOTCH1, KLF2, EMCN]
                 │       │   │       → CXG:       endocardial cell (10,932)
                 │       │   │       → Xu:        endocardium (1,020)
-                │       │   │       → Lázár(HL): Endocardial Endothelial Cell (Endoc_EC) (6,994)
                 │       │   │       → Lázár(DL): Endoc_EC_1 (2,310), Endoc_EC_2 (778),
                 │       │   │                    Endoc_EC_3 (1,363), Endoc_EC_4 (621),
                 │       │   │                    Proliferating Endothelial Cell (Prol_EC) (301)
@@ -102,9 +92,7 @@ Zygote (Day 0) ✗
                 │       │   │       │   └── EndMT (PCW 4–5) [SNAI1, SNAI2, TWIST1, ZEB2] ✗
                 │       │   │       │       └── Endocardial Cushion / Cushion Mesenchymal Cells (PCW 5–6) [NOTCH1, BMP2, SOX9, MSX1]
                 │       │   │       │           → Xu:        endocardial derived cell (503)
-                │       │   │       │           → Lázár(HL): Endocardial Cushion Endothelial Cell (EndocCush_EC) (304)
                 │       │   │       │           └── Valve Mesenchymal Cells / Valve Mesenchymal Cell (PCW 6–8) [SOX9, POSTN, SCX]
-                │       │   │       │               → Lázár(HL): Valve Mesenchymal Cell (Valve_MC) (3,206)
                 │       │   │       │               → Lázár(DL): Valve_MC_1 (961), Valve_MC_2 (1,540)
                 │       │   │       │
                 │       │   │       └── Outflow Tract Endocardial Cells (PCW 4–5) [NOTCH1, HEY1, HEY2] ✗
@@ -130,11 +118,6 @@ Zygote (Day 0) ✗
                 │       │   │   ├── Mesenchymal Stem Cell (PCW 5–10) [ENG, NT5E]
                 │       │   │   │   → CXG: mesenchymal stem cell (261)
                 │       │   │   └── Fibroblast (PCW 10–40) [COL1A1, DCN, LUM]
-                │       │   │       → Lázár(HL): Annulus Fibrosus Fibroblast (AnnFibr_FB) (1,345),
-                │       │   │                    Interstitial Fibroblast (Int_FB) (14,154),
-                │       │   │                    Outflow Tract Fibroblast (OFT_FB) (12,581),
-                │       │   │                    PDE4Chigh Fibroblast (PDE4Chigh_FB) (563),
-                │       │   │                    Proliferating Fibroblast (Prol_FB) (324)
                 │       │   │       → Lázár(DL): Adv_FB_1 (2,129), Adv_FB_2 (918),
                 │       │   │                    Int_FB_1 (2,463), Int_FB_2 (1,612), Int_FB_3 (257),
                 │       │   │                    Prol_FB_1 (479), Prol_FB_2 (740),
@@ -148,7 +131,6 @@ Zygote (Day 0) ✗
                 │       │       │   → Tyser: hemogenic endothelial progenitor (111)
                 │       │       │   ├── Myeloid Cell (PCW 4–40) [LYZ]
                 │       │       │   │   → CXG:       myeloid cell (4,621)
-                │       │       │   │   → Lázár(HL): Myeloid Cell (MyC) (2,016)
                 │       │       │   ├── Monocyte (PCW 6–40) [S100A8, CTSS]
                 │       │       │   │   → CXG: monocyte (1)
                 │       │       │   │   └── Macrophage (PCW 8–40) [CD68, APOE]
@@ -164,7 +146,6 @@ Zygote (Day 0) ✗
                 │       │       │   → CXG: leukocyte (709)
                 │       │       ├── Innate Lymphoid Cell (PCW 8–40) [NKG7]
                 │       │       │   → CXG:       innate lymphoid cell (3,333)
-                │       │       │   → Lázár(HL): Lymphoid Cell (LyC) (667)
                 │       │       ├── Lymphoid Lineage [IL7R] ✗
                 │       │       │   └── T Cell (PCW 10–40) [CD3D, TRBC1]
                 │       │       │       → CXG: T cell (11)
@@ -185,21 +166,16 @@ Zygote (Day 0) ✗
                 │           │       ├── Mesothelial Cell of Epicardium (PCW 8–40) [KRT18, WT1]
                 │           │       │   → CXG:       mesothelial cell of epicardium (2,276)
                 │           │       │   → Xu:        epicardium (252)
-                │           │       │   → Lázár(HL): Epicardial Cell (EpC) (924)
                 │           │       └── Epicardium Derived Cell (PCW 6–10) [TCF21]
                 │           │           → Xu:        epicardial derived cell (785)
-                │           │           → Lázár(HL): Epicardium-Derived Cell (EPDC) (1,956)
                 │           │           → Lázár(DL): EPDC_1 (552), EPDC_2 (1,697)
                 │           │           ├── Cardiac Fibroblast / fibroblast (PCW 10–40) [COL1A1, DCN]
                 │           │           │   → CXG: fibroblast (7,183)
                 │           │           ├── Vascular Smooth Muscle Cell / smooth muscle cell (PCW 10–40) [ACTA2, TAGLN]
                 │           │           │   → CXG:       smooth muscle cell (5,859)
-                │           │           │   → Lázár(HL): Coronary Artery Smooth Muscle Cell (CA_SMC) (3,571)
                 │           │           ├── Pericyte / Pericyte-like Mesenchymal Cell (PCW 10–40) [RGS5, CSPG4]
                 │           │           │   → CXG:       pericyte (1,134)
                 │           │           │   → Xu:        pericyte (myocardium) (17)
-                │           │           │   → Lázár(HL): Pericyte (PC) (501),
-                │           │           │                Pericyte-like Mesenchymal Cell (Peric_MC) (249)
                 │           │           │   → Lázár(DL): Pericyte-like Mesenchymal Cell (Peric_MC^fg) (1,431)
                 │           │           ├── Coronary Endothelial Cell (PCW 10–40) [PECAM1, VWF, PRSS23] ✗
                 │           │           └── Adipocyte (PCW 20–40) [FABP4, ADIPOQ]
@@ -210,16 +186,12 @@ Zygote (Day 0) ✗
                 │           └── Vascular Endothelial Cell / endothelial cell of vascular tree (PCW 8–40) [PECAM1, VWF]
                 │               → CXG:       endothelial cell (9,030),
                 │                            endothelial cell of vascular tree (6,100)
-                │               → Lázár(HL): PDE4Chigh Endothelial Cell (PDE4Chigh_EC) (1,658),
-                │                            High TMSB10 Cluster 2 (TMSB10high_C_2) (698)
                 │               → Lázár(DL): PDE4Chigh_EC^fg (769), TMSB10high_C_2^fg (747)
                 │               ├── Capillary Endothelial Cell (PCW 8–40) [RGCC, CA4]
                 │               │   → CXG:       capillary endothelial cell (1,567)
-                │               │   → Lázár(HL): Microvascular Endothelial Cell (MicroVasc_EC) (4,553)
                 │               │   → Lázár(DL): Cap_EC_1 (1,458), Cap_EC_2 (2,859)
                 │               ├── Arterial Endothelial Cell / Endothelial Cell of Artery (PCW 10–40) [SOX17, EFNB2]
                 │               │   → CXG:       endothelial cell of artery (903)
-                │               │   → Lázár(HL): Macrovascular Endothelial Cell (MacroVasc_EC) (2,120)
                 │               │   → Lázár(DL): Arteriolar Endothelial Cell (Arteriol_EC) (1,006),
                 │               │                Art_EC_1 (269), Art_EC_2 (525)
                 │               ├── Venous Endothelial Cell / Vein Endothelial Cell (PCW 10–40) [NR2F2, ACKR1]
@@ -228,7 +200,6 @@ Zygote (Day 0) ✗
                 │               │                Venular Endothelial Cell (Venul_EC) (133)
                 │               └── Lymphatic Endothelial Cell / Endothelial Cell of Lymphatic Vessel (PCW 10–40) [PROX1, LYVE1]
                 │                   → CXG:       endothelial cell of lymphatic vessel (820)
-                │                   → Lázár(HL): Lymphatic Endothelial Cell (LEC) (444)
                 │                   → Lázár(DL): Lymphatic Endothelial Cell (LEC^fg) (403)
                 │                   └── Dermis Microvascular Lymphatic Endothelial Cell (PCW 10–40) [CCL21]
                 │                       → CXG: dermis microvascular lymphatic vessel endothelial cell (742)
@@ -239,7 +210,6 @@ Zygote (Day 0) ✗
                     │   ├── Neural Cell (PCW 3–40) [SOX2]
                     │   ├── Neuron (PCW 6–40) [RBFOX3, TUBB3]
                     │   │   → CXG:       neuron (2,394)
-                    │   │   → Lázár(HL): Neuroblast-Neuron (NB-N) (362)
                     │   │   → Lázár(DL): Autonomic Neuron 1 (Aut_Neu_1) (145),
                     │   │                Autonomic Neuron 2 (Aut_Neu_2) (69),
                     │   │                Chromaffin Cell (Chrom_C) (41)
@@ -247,7 +217,6 @@ Zygote (Day 0) ✗
                     │   │       → CXG: visceromotor neuron (439)
                     │   └── Schwann Cell (PCW 8–40) [SOX10, PLP1]
                     │       → CXG:       Schwann cell (669)
-                    │       → Lázár(HL): Schwann Cell Precursor / Glia Cell (SCP-GC) (744)
                     │       → Lázár(DL): SCP_1 (168), SCP_2 (80), SCP_3 (38),
                     │                    SCP_4 (72), SCP_5 (195),
                     │                    Myelinating Schwann Cell (My_SC) (28),
@@ -256,7 +225,6 @@ Zygote (Day 0) ✗
                     └── Neural Crest (PCW 3–4) [SOX10, FOXD3] ✗
                         └── Cardiac Neural Crest Cell (PCW 4–6) [SOX10] ✗
                             └── Outflow Tract Smooth Muscle Cell (PCW 8–40) [ACTA2]
-                                → Lázár(HL): Outflow Tract Smooth Muscle Cell (OFT_SMC) (3,507)
 
 
 ══════════════════════════════════════════════════════════════════════
