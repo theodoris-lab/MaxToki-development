@@ -104,13 +104,33 @@ TREE: dict = {
                                                             },
                                                             "children": [
                                                                 {
+                                                                    "name": "AV Bundle / Bundle Branch CM",
+                                                                    "pcw": "PCW 10–40",
+                                                                    "missing": False,
+                                                                    "datasets": {
+                                                                        "Lazar_DL": [
+                                                                            ("AV Bundle / Bundle Branch CM (AVB-BB_CM)", 164),
+                                                                        ]
+                                                                    },
+                                                                    "children": [],
+                                                                },
+                                                                {
+                                                                    "name": "Transitional / Stellate Purkinje Fiber CM",
+                                                                    "pcw": "PCW 10–40",
+                                                                    "missing": False,
+                                                                    "datasets": {
+                                                                        "Lazar_DL": [
+                                                                            ("Transitional / Stellate Purkinje Fiber CM (TsPF_CM)", 454),
+                                                                        ]
+                                                                    },
+                                                                    "children": [],
+                                                                },
+                                                                {
                                                                     "name": "Purkinje Fiber Cell",
                                                                     "pcw": "PCW 10–40",
                                                                     "missing": False,
                                                                     "datasets": {
                                                                         "Lazar_DL": [
-                                                                            ("AV Bundle/Bundle Branch CM (AVB-BB_CM)", 164),
-                                                                            ("Transitional/Stellate Purkinje Fiber CM (TsPF_CM)", 454),
                                                                             ("Purkinje Fiber CM (PF_CM)", 279),
                                                                         ]
                                                                     },
@@ -141,19 +161,29 @@ TREE: dict = {
                                                                     "datasets": {},
                                                                     "children": [
                                                                         {
-                                                                            "name": "SA/AV Node Pacemaker Cell",
+                                                                            "name": "SA Node Pacemaker Cell",
                                                                             "pcw": "PCW 10–40",
                                                                             "missing": False,
                                                                             "datasets": {
                                                                                 "Xu": [("sinoatrial node (SAN)", 105)],
                                                                                 "Lazar_DL": [
                                                                                     ("SA Node CM (SAN_CM)", 299),
-                                                                                    ("AV Node CM (AVN_CM)", 147),
                                                                                 ],
                                                                             },
                                                                             "children": [],
                                                                         }
                                                                     ],
+                                                                },
+                                                                {
+                                                                    "name": "AV Node Cell",
+                                                                    "pcw": "PCW 10–40",
+                                                                    "missing": False,
+                                                                    "datasets": {
+                                                                        "Lazar_DL": [
+                                                                            ("AV Node CM (AVN_CM)", 147),
+                                                                        ],
+                                                                    },
+                                                                    "children": [],
                                                                 },
                                                             ],
                                                         },
