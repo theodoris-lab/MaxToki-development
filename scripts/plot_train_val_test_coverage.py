@@ -7,8 +7,9 @@ Data sources:
   - CellxGene heart-dev subset: exact per-PCW counts
     (dump/cellxgene_heart_development_subset_celltype_by_stage_combined.csv)
   - Tyser et al. 2021: aggregate counts at CS7 (≈ PCW 3), hardcoded
-  - Lázár DL / Xu: aggregated across the full fetal window; shown as a
-    marginal bar chart rather than per-PCW dots (no staged breakdown available)
+  - Lázár et al. 2025 DL clusters: per-PCW counts from HDCA_heart_clustering.rds
+    (PCW 6–12, 23 anatomical cluster labels)
+  - Xu et al. 2023: aggregate total only (no per-PCW breakdown extracted)
 
 Usage:
     python scripts/plot_train_val_test_coverage.py
@@ -27,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 CXG_CSV = ROOT / "dump" / "cellxgene_heart_development_subset_celltype_by_stage_combined.csv"
 OUT_HTML = ROOT / "cell_type_harmonization" / "train_val_test_coverage.html"
+LAZAR_CSV = Path("/gladstone/theodoris/lab/enockniyonkuru/maxtoki_development_data/lazar_et_al_2025/lazar_metadata.csv")
 
 # ── Lineage grouping ───────────────────────────────────────────────────────
 # Maps CXG cell type label → canonical lineage group (display order matters)
@@ -111,6 +113,46 @@ CXG_STAGE_MAP: dict[str, tuple[float, str]] = {
     "20th week post-fertilization stage":    (20,   "PCW 20"),
 }
 
+# ── Lázár DL metadata ─────────────────────────────────────────────────────
+# Maps age column value → (sort_key, display_label)
+# CXG-overlapping PCWs get +0.01 offset so they form adjacent columns
+LAZAR_AGE_MAP: dict[str, tuple[float, str]] = {
+    "w6":   (6.01,  "PCW 6"),
+    "w7":   (7.0,   "PCW 7"),
+    "w8":   (8.0,   "PCW 8"),
+    "w9":   (9.0,   "PCW 9"),
+    "w10":  (10.01, "PCW 10"),
+    "w10.5":(10.5,  "PCW 10.5"),
+    "w12":  (12.01, "PCW 12"),
+}
+
+# Maps Lázár DL cluster label → lineage group
+LAZAR_CLUSTER_LINEAGE: dict[str, str] = {
+    "LV_C":  "Cardiomyocyte",
+    "LV_T":  "Cardiomyocyte",
+    "RV_C":  "Cardiomyocyte",
+    "RV_T":  "Cardiomyocyte",
+    "LA":    "Cardiomyocyte",
+    "RA":    "Cardiomyocyte",
+    "OFT":   "Cardiomyocyte",
+    "PM":    "Cardiomyocyte",
+    "MY":    "Cardiomyocyte",
+    "VM":    "Cardiomyocyte",
+    "TA":    "Cardiomyocyte",
+    "TM":    "Cardiomyocyte",
+    "SCV":   "Cardiomyocyte",
+    "B_A":   "Cardiomyocyte",
+    "B_V":   "Cardiomyocyte",
+    "AVP_A": "Cardiomyocyte",
+    "AVP_V": "Cardiomyocyte",
+    "VCS":   "Cardiomyocyte",
+    "EN":    "Vascular EC",
+    "VE":    "Vascular EC",
+    "LCV":   "Vascular EC",
+    "A_EP":  "Epicardial / EPDC",
+    "V_EP":  "Epicardial / EPDC",
+}
+
 # ── Tyser data (CS7–CS8 ≈ PCW 3) hardcoded ────────────────────────────────
 # Maps CXG-compatible cell type → count  (types not in CXG shown separately)
 TYSER_PCW = 3.0
@@ -132,16 +174,17 @@ TYSER_CXG_OVERLAP: dict[str, int] = {
     "erythrocyte":           32,
 }
 
-# Lázár DL + Xu totals (no per-PCW breakdown available)
-LAZAR_DL_TOTAL  = 107_673
-XU_TOTAL        =   5_243
+# Xu total (no per-PCW breakdown extracted)
+XU_TOTAL = 5_243
 
 # ── Proposed split annotation ──────────────────────────────────────────────
 # Highlight certain PCW columns with a background colour
 SPLIT_ANNOTATION: dict[float, dict] = {
-    10: {"label": "Val", "color": "rgba(52,168,83,0.12)", "border": "#34a853"},
-    20: {"label": "Val", "color": "rgba(52,168,83,0.12)", "border": "#34a853"},
-    6:  {"label": "Test (option)", "color": "rgba(234,67,53,0.10)", "border": "#ea4335"},
+    10:    {"label": "Val",           "color": "rgba(52,168,83,0.12)",  "border": "#34a853"},
+    10.01: {"label": "Val",           "color": "rgba(52,168,83,0.12)",  "border": "#34a853"},
+    20:    {"label": "Val",           "color": "rgba(52,168,83,0.12)",  "border": "#34a853"},
+    6:     {"label": "Test (option)", "color": "rgba(234,67,53,0.10)", "border": "#ea4335"},
+    6.01:  {"label": "Test (option)", "color": "rgba(234,67,53,0.10)", "border": "#ea4335"},
 }
 
 # ── Lineage group colours ──────────────────────────────────────────────────
@@ -185,11 +228,31 @@ def load_cxg_data() -> tuple[list[str], dict[str, dict[str, int]]]:
     return stage_cols, data
 
 
+def load_lazar_data() -> dict[str, dict[float, int]]:
+    """Return {cluster_label: {pcw_key: count}} from the exported Seurat metadata CSV."""
+    if not LAZAR_CSV.exists():
+        return {}
+    counts: dict[str, dict[float, int]] = {}
+    with LAZAR_CSV.open(newline="", encoding="utf-8") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            cluster = row["seurat_clusters_annot"].strip()
+            age = row["age"].strip()
+            if cluster not in LAZAR_CLUSTER_LINEAGE or age not in LAZAR_AGE_MAP:
+                continue
+            pcw_key = LAZAR_AGE_MAP[age][0]
+            if cluster not in counts:
+                counts[cluster] = {}
+            counts[cluster][pcw_key] = counts[cluster].get(pcw_key, 0) + 1
+    return counts
+
+
 # ── Build flat row list ────────────────────────────────────────────────────
 
 def build_rows(
     stage_cols: list[str],
     cxg_data: dict[str, dict[str, int]],
+    lazar_data: dict[str, dict[float, int]],
 ) -> list[dict]:
     """
     Return a list of row dicts ordered by lineage group then by total count desc.
@@ -218,7 +281,12 @@ def build_rows(
             [(ct, d) for ct, d in cxg_data.items() if LINEAGE_MAP[ct] == lineage],
             key=lambda x: -sum(x[1].values()),
         )
-        if not members:
+        lazar_members = sorted(
+            [(cl, d) for cl, d in lazar_data.items()
+             if LAZAR_CLUSTER_LINEAGE.get(cl) == lineage],
+            key=lambda x: -sum(x[1].values()),
+        )
+        if not members and not lazar_members:
             continue
         rows.append({"is_group_header": True, "lineage": lineage, "label": lineage})
         for ct, stage_dict in members:
@@ -242,6 +310,15 @@ def build_rows(
                 "cells": cells,
                 "total": total,
             })
+        for cluster, pcw_dict in lazar_members:
+            rows.append({
+                "is_group_header": False,
+                "label": cluster,
+                "lineage": lineage,
+                "dataset": "Lázár",
+                "cells": pcw_dict,
+                "total": sum(pcw_dict.values()),
+            })
     return rows
 
 
@@ -258,11 +335,14 @@ def dot_r(count: int, max_count: int, max_r: float = 20.0, min_r: float = 3.0) -
 # ── HTML generation ────────────────────────────────────────────────────────
 
 def build_html(rows: list[dict], stage_cols: list[str]) -> str:
-    # Ordered PCW columns: Tyser first, then CXG stages sorted by PCW
-    pcw_cols: list[tuple[float, str]] = [(TYSER_PCW, TYSER_LABEL)]
+    # Ordered PCW columns: Tyser, CXG, and Lázár — sorted by sort_key
+    pcw_cols: list[tuple[float, str, str]] = [(TYSER_PCW, TYSER_LABEL, "Tyser")]
     for col in stage_cols:
         pcw_key, label = CXG_STAGE_MAP[col]
-        pcw_cols.append((pcw_key, label))
+        pcw_cols.append((pcw_key, label, "CXG"))
+    for _age, (pcw_key, label) in LAZAR_AGE_MAP.items():
+        pcw_cols.append((pcw_key, label, "Lázár"))
+    pcw_cols.sort(key=lambda x: x[0])
 
     # Find global max for dot sizing
     max_count = 1
@@ -292,7 +372,7 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
     svg_parts.append(f'<rect width="{SVG_W}" height="{SVG_H}" fill="#ffffff"/>')
 
     # Column backgrounds (for split annotations and alternating)
-    for ci, (pcw_key, _) in enumerate(pcw_cols):
+    for ci, (pcw_key, _label, _ds) in enumerate(pcw_cols):
         cx = LABEL_W + ci * COL_W
         ann = SPLIT_ANNOTATION.get(pcw_key)
         if ann:
@@ -348,12 +428,12 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
         y += ROW_H
 
     # Column headers
-    for ci, (pcw_key, label) in enumerate(pcw_cols):
+    for ci, (pcw_key, label, dataset) in enumerate(pcw_cols):
         cx = LABEL_W + ci * COL_W + COL_W // 2
         ann = SPLIT_ANNOTATION.get(pcw_key)
-        # Dataset label (Tyser vs CXG)
-        ds_label = "Tyser" if pcw_key == TYSER_PCW else "CXG"
-        ds_color = "#f59e0b" if pcw_key == TYSER_PCW else "#4285f4"
+        # Dataset badge
+        ds_label = dataset
+        ds_color = "#f59e0b" if dataset == "Tyser" else ("#0f9d58" if dataset == "Lázár" else "#4285f4")
         svg_parts.append(
             f'<rect x="{LABEL_W + ci*COL_W + 4}" y="4" width="{COL_W - 8}" height="14" '
             f'rx="3" fill="{ds_color}" opacity="0.85"/>'
@@ -391,8 +471,8 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
             continue
         cy = y + ROW_H // 2
         dataset = row.get("dataset", "CXG")
-        dot_color = "#f59e0b" if dataset == "Tyser" else "#4285f4"
-        for ci, (pcw_key, _) in enumerate(pcw_cols):
+        dot_color = "#f59e0b" if dataset == "Tyser" else ("#0f9d58" if dataset == "Lázár" else "#4285f4")
+        for ci, (pcw_key, _label, _ds) in enumerate(pcw_cols):
             count = row["cells"].get(pcw_key, 0)
             if count <= 0:
                 y_dot = y + ROW_H
@@ -487,12 +567,13 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
   <h1>Cell Type Coverage by Developmental Stage</h1>
   <p class="subtitle">
     Dot size ∝ log(cell count). Hover over a dot for exact count.
-    CellxGene data has per-PCW breakdown; Tyser (CS7) placed at PCW&nbsp;~3.
+    CellxGene and Lázár data have per-PCW breakdown; Tyser (CS7) placed at PCW&nbsp;~3.
   </p>
 
   <div class="legend-row">
     <span style="font-size:11px;font-weight:600;color:#555">Dataset:</span>
     <span class="legend-badge" style="background:#4285f4">CXG — CellxGene heart-dev subset</span>
+    <span class="legend-badge" style="background:#0f9d58">Lázár et al. 2025 (DL clusters)</span>
     <span class="legend-badge" style="background:#f59e0b">Tyser et al. 2021 (CS7)</span>
   </div>
 
@@ -519,14 +600,10 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
   </div>
 
   <div class="note-box">
-    <strong>Datasets without per-PCW breakdown (not shown above):</strong><br>
-    &bull; <strong>Lázár et al. (DL clusters)</strong> — {LAZAR_DL_TOTAL:,} cells total,
-      spanning ~PCW 6–20+ (fetal heart atlas). Same PCW window as CXG; adds depth,
-      not new timepoints.<br>
-    &bull; <strong>Xu et al. 2023</strong> — {XU_TOTAL:,} cells total, fetal cardiac
-      development (~PCW 4–20); includes early SHF progenitors and conduction system cells
-      underrepresented in CXG.<br>
-    Per-PCW breakdown for these datasets requires extracting metadata from the H5AD files.
+    <strong>Dataset without per-PCW breakdown:</strong><br>
+    &bull; <strong>Xu et al. 2023</strong> &mdash; {XU_TOTAL:,} cells total (~PCW 4&ndash;5);
+      includes early SHF progenitors and conduction system cells underrepresented in CXG
+      and Lázár.
   </div>
 </body>
 </html>"""
@@ -535,7 +612,8 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
 
 def main() -> None:
     stage_cols, cxg_data = load_cxg_data()
-    rows = build_rows(stage_cols, cxg_data)
+    lazar_data = load_lazar_data()
+    rows = build_rows(stage_cols, cxg_data, lazar_data)
     html = build_html(rows, stage_cols)
     OUT_HTML.write_text(html, encoding="utf-8")
     print(f"Written: {OUT_HTML}")
