@@ -54,10 +54,12 @@ Zygote (Day 0) ✗
                 │       │   │       │                Metabolically Active Ventricular CM 2 (MetAct_vCM_2) (8,315)
                 │       │   │       │   → Lázár(DL): vCM_1 (349), vCM_2 (535), vCM_3 (277),
                 │       │   │       │                vCM_4 (1,552), vCM_5 (1,955), vCM_6 (2,085)
+                │       │   │       │   ├── AV Bundle / Bundle Branch CM (PCW 10–40) [IRX3]
+                │       │   │       │   │   → Lázár(DL): AV Bundle / Bundle Branch CM (AVB-BB_CM) (164)
+                │       │   │       │   ├── Transitional / Stellate Purkinje Fiber CM (PCW 10–40) [IRX3, GJA5]
+                │       │   │       │   │   → Lázár(DL): Transitional / Stellate Purkinje Fiber CM (TsPF_CM) (454)
                 │       │   │       │   ├── Purkinje Fiber Cell (PCW 10–40) [IRX3, GJA5, CNTN2]
-                │       │   │       │   │   → Lázár(DL): AV Bundle / Bundle Branch CM (AVB-BB_CM) (164),
-                │       │   │       │   │                Transitional / Stellate Purkinje Fiber CM (TsPF_CM) (454),
-                │       │   │       │   │                Purkinje Fiber CM (PF_CM) (279)
+                │       │   │       │   │   → Lázár(DL): Purkinje Fiber CM (PF_CM) (279)
                 │       │   │       │   ├── Left Ventricular Cardiomyocytes [TBX5] ✗
                 │       │   │       │   └── Right Ventricular Cardiomyocytes [HAND2] ✗
                 │       │   │       │
@@ -70,11 +72,12 @@ Zygote (Day 0) ✗
                 │       │   │                        Right Atrial CM (Right_aCM) (1,635),
                 │       │   │                        Conducting Atrial CM (Cond_aCM) (1,319)
                 │       │   │           ├── Left Atrial Cardiomyocytes [PITX2] ✗
-                │       │   │           └── Right Atrial Cardiomyocytes [TBX5] ✗
-                │       │   │               └── SA Node Pacemaker Cell (PCW 10–40) [SHOX2, TBX3, HCN4, CACNA1D]
-                │       │   │                   → Xu:        sinoatrial node (SAN) (105)
-                │       │   │                   → Lázár(DL): SA Node CM (SAN_CM) (299),
-                │       │   │                                AV Node CM (AVN_CM) (147)
+                │       │   │           ├── Right Atrial Cardiomyocytes [TBX5] ✗
+                │       │   │           │   └── SA Node Pacemaker Cell (PCW 10–40) [SHOX2, TBX3, HCN4, CACNA1D]
+                │       │   │           │       → Xu:        sinoatrial node (SAN) (105)
+                │       │   │           │       → Lázár(DL): SA Node CM (SAN_CM) (299)
+                │       │   │           └── AV Node Cell (PCW 10–40) [TBX3, HCN4]
+                │       │   │               → Lázár(DL): AV Node CM (AVN_CM) (147)
                 │       │   │
                 │       │   ├── Endothelial / Endocardial Lineage (PCW 3–10) [NFATC1, KDR, PECAM1] ✗
                 │       │   │   │
@@ -103,11 +106,6 @@ Zygote (Day 0) ✗
                 │       │   │       │           └── Valve Mesenchymal Cells / Valve Mesenchymal Cell (PCW 6–8) [SOX9, POSTN, SCX]
                 │       │   │       │               → Lázár(HL): Valve Mesenchymal Cell (Valve_MC) (3,206)
                 │       │   │       │               → Lázár(DL): Valve_MC_1 (961), Valve_MC_2 (1,540)
-                │       │   │       │               └── Valve Interstitial Cell (PCW 7–40) [SOX9, POSTN, COL1A1]
-                │       │   │       │                   → CXG:       valve interstitial cell (3)
-                │       │   │       │                   → Lázár(DL): Valve Interstitial Cell (VIC) (1,360)
-                │       │   │       │                   ├── Mitral Valve Interstitial Cells ✗
-                │       │   │       │                   └── Tricuspid Valve Interstitial Cells ✗
                 │       │   │       │
                 │       │   │       └── Outflow Tract Endocardial Cells (PCW 4–5) [NOTCH1, HEY1, HEY2] ✗
                 │       │   │           │   (future aortic and pulmonary valve region)
@@ -147,7 +145,6 @@ Zygote (Day 0) ✗
                 │       │       ├── Hematopoietic Cell (PCW 3–40) [PTPRC]
                 │       │       │   → CXG:   hematopoietic cell (328),
                 │       │       │            cord blood hematopoietic stem cell (6),
-                │       │       │            megakaryocyte (439)
                 │       │       │   → Tyser: hemogenic endothelial progenitor (111)
                 │       │       │   ├── Myeloid Cell (PCW 4–40) [LYZ]
                 │       │       │   │   → CXG:       myeloid cell (4,621)
@@ -240,7 +237,6 @@ Zygote (Day 0) ✗
                     → Tyser: ectodermal cell (29)
                     ├── Neural Lineage [SOX1, PAX6] ✗
                     │   ├── Neural Cell (PCW 3–40) [SOX2]
-                    │   │   → CXG: neural cell (1,000)
                     │   ├── Neuron (PCW 6–40) [RBFOX3, TUBB3]
                     │   │   → CXG:       neuron (2,394)
                     │   │   → Lázár(HL): Neuroblast-Neuron (NB-N) (362)
