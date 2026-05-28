@@ -58,16 +58,43 @@ The heart-development fine-tune lives in `developmental_finetuning/heart_dev_fin
 - **Cell-token prediction** — cross-entropy over response gene tokens
 - **Timelapse prediction** — MSE regression on the developmental time gap between two cells (in PCW)
 
-The pipeline runs in four Slurm stages:
+The pipeline runs in five Slurm stages:
 
 | Stage | Script | Description |
 |---|---|---|
+| 0 | `src/tokenize_heart_dev_sources.py` | Tokenize source h5ads into HuggingFace `.dataset` files |
 | 1 | `src/prepare_heart_dev_finetune_data.py` | Harmonize and split datasets into train / val / test |
 | 2 | `src/build_heart_dev_trajectories.py` | Build MaxToki paragraph trajectories |
 | 3 | `src/finetune_heart_dev.py` | Training loop (GPU, DeepSpeed ZeRO-3) |
 | 4 | `src/evaluate_heart_dev.py` | Evaluation and metrics |
 
 See `developmental_finetuning/heart_dev_finetune/README.md` for full pipeline details.
+
+## Data Curation Scripts
+
+Utility scripts for dataset download and preprocessing live in `scripts/`:
+
+| Script | Purpose |
+|---|---|
+| `download_datasets.sh` / `download_datasets.sbatch` | Download CellxGene h5ads and non-CXG datasets to HPC storage |
+| `subset_cellxgene_heart_development.py` | Filter CellxGene h5ads to cardiac / embryonic / normal observations |
+| `convert_non_cellxgene_to_h5ad.py` | Convert non-CXG source datasets (Tyser, Xu) to h5ad format |
+| `convert_lazar_to_h5ad.py` | Convert Lázár RDS metadata + HDF5 counts to h5ad format |
+| `build_cell_type_harmonization.py` | Build the initial harmonization map from lineage tree and dataset labels |
+| `apply_harmonization.py` | Apply the harmonization map to h5ad `.obs`, adding `cell_type_harmonized` columns |
+| `visualize_lineage_tree.py` | Generate interactive HTML lineage tree visualization |
+| `plot_lineage_tree_author_labels.py` | Plot author-provided cell-type labels overlaid on the lineage tree |
+| `plot_train_val_test_coverage.py` | Generate train/val/test coverage dot-plot across PCW timepoints |
+| `utils.py` | Shared utilities (h5ad I/O, metadata helpers) |
+
+## Data Extraction Notebooks
+
+`data_extraction/` contains exploratory notebooks used during dataset curation:
+
+| Notebook | Purpose |
+|---|---|
+| `data_preparation.ipynb` | Initial exploration and QC of downloaded datasets |
+| `downloading_vent_cardiomyocytes.ipynb` | Exploratory download of ventricular cardiomyocyte subsets from CellxGene |
 
 ## Contact
 
