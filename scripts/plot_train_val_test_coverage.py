@@ -205,15 +205,21 @@ XU_CELL_LINEAGE: dict[str, str] = {
 XU_LPM_ANNOTS = set(XU_CELL_LINEAGE.keys()) - {"endocardium", "endocardial derived cell"}
 XU_ENDO_ANNOTS = {"endocardium", "endocardial derived cell"}
 
-# ── Proposed split annotation ──────────────────────────────────────────────
-# Highlight certain PCW columns with a background colour
+# ── Finalised train / val / test split ───────────────────────────────────────
+# Val:  PCW 10 (CXG + Lázár), PCW 20 (CXG)
+# Test: PCW 7  (Lázár only — unique interleaved timepoint)
+# Train: everything else
 SPLIT_ANNOTATION: dict[float, dict] = {
-    10:    {"label": "Val",           "color": "rgba(52,168,83,0.12)",  "border": "#34a853"},
-    10.01: {"label": "Val",           "color": "rgba(52,168,83,0.12)",  "border": "#34a853"},
-    20:    {"label": "Val",           "color": "rgba(52,168,83,0.12)",  "border": "#34a853"},
-    6:     {"label": "Test (option)", "color": "rgba(234,67,53,0.10)", "border": "#ea4335"},
-    6.01:  {"label": "Test (option)", "color": "rgba(234,67,53,0.10)", "border": "#ea4335"},
+    10:    {"label": "Val",  "color": "rgba(52,168,83,0.13)",  "border": "#34a853"},
+    10.01: {"label": "Val",  "color": "rgba(52,168,83,0.13)",  "border": "#34a853"},
+    20:    {"label": "Val",  "color": "rgba(52,168,83,0.13)",  "border": "#34a853"},
+    7.0:   {"label": "Test", "color": "rgba(234,67,53,0.11)", "border": "#ea4335"},
 }
+
+# ── Lineage holdouts ──────────────────────────────────────────────────────────
+# These two complete lineages are withheld from all splits to test generalisation
+# across unseen cell identity (see documents/train_val_test_split_rationale.md).
+LINEAGE_HOLDOUTS: set[str] = {"Epicardial / EPDC", "Vascular EC"}
 
 # ── Lineage group colours ──────────────────────────────────────────────────
 LINEAGE_COLORS: dict[str, str] = {
@@ -439,6 +445,16 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
 
     svg_parts: list[str] = []
 
+    # SVG defs: diagonal stripe pattern for lineage-holdout rows
+    svg_parts.append(
+        '<defs>'
+        '<pattern id="holdout-stripe" patternUnits="userSpaceOnUse" '
+        'width="6" height="6" patternTransform="rotate(45)">'
+        '<line x1="0" y1="0" x2="0" y2="6" stroke="#888" stroke-width="1.5"/>'
+        '</pattern>'
+        '</defs>'
+    )
+
     # Background rect
     svg_parts.append(f'<rect width="{SVG_W}" height="{SVG_H}" fill="#ffffff"/>')
 
@@ -465,22 +481,35 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
         bdr = LINEAGE_BORDER.get(lin, "#ccc")
         if row.get("is_group_header"):
             # Group header row
+            is_holdout = lin in LINEAGE_HOLDOUTS
+            hdr_opacity = "0.30" if is_holdout else "0.18"
             svg_parts.append(
                 f'<rect x="0" y="{y}" width="{SVG_W}" height="{ROW_H}" '
-                f'fill="{bdr}" opacity="0.18"/>'
+                f'fill="{bdr}" opacity="{hdr_opacity}"/>'
             )
             svg_parts.append(
                 f'<rect x="0" y="{y}" width="4" height="{ROW_H}" fill="{bdr}"/>'
             )
+            hdr_text = row["label"].upper()
+            if is_holdout:
+                hdr_text += "  ⊗ LINEAGE HOLDOUT"
             svg_parts.append(
                 f'<text x="8" y="{y + ROW_H - 7}" font-size="10" font-weight="700" '
-                f'fill="#333" font-family="sans-serif">{row["label"].upper()}</text>'
+                f'fill="#333" font-family="sans-serif">{hdr_text}</text>'
             )
         else:
+            is_holdout = lin in LINEAGE_HOLDOUTS
+            row_bg = bg
             svg_parts.append(
-                f'<rect x="0" y="{y}" width="{LABEL_W}" height="{ROW_H}" '
-                f'fill="{bg}"/>'
+                f'<rect x="0" y="{y}" width="{SVG_W}" height="{ROW_H}" '
+                f'fill="{row_bg}"/>'
             )
+            if is_holdout:
+                # Diagonal-stripe overlay to visually mark held-out rows
+                svg_parts.append(
+                    f'<rect x="0" y="{y}" width="{SVG_W}" height="{ROW_H}" '
+                    f'fill="url(#holdout-stripe)" opacity="0.35"/>'
+                )
             svg_parts.append(
                 f'<rect x="0" y="{y}" width="4" height="{ROW_H}" fill="{bdr}"/>'
             )
@@ -657,11 +686,15 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
   <div class="split-legend">
     <div class="split-item">
       <div class="split-swatch" style="background:rgba(52,168,83,0.25);border:1px dashed #34a853"></div>
-      <span>Proposed <strong>Val</strong> (PCW 10, 20)</span>
+      <span><strong>Val</strong>: PCW 10, 20</span>
     </div>
     <div class="split-item">
       <div class="split-swatch" style="background:rgba(234,67,53,0.18);border:1px dashed #ea4335"></div>
-      <span>Proposed <strong>Test</strong> option (PCW 6)</span>
+      <span><strong>Test</strong>: PCW 7</span>
+    </div>
+    <div class="split-item">
+      <div class="split-swatch" style="background:repeating-linear-gradient(45deg,#bbb,#bbb 1px,#fff 1px,#fff 4px);border:1px solid #bbb"></div>
+      <span><strong>Lineage holdout</strong>: Epicardial/EPDC &amp; Vascular EC (excluded from all splits)</span>
     </div>
   </div>
 
@@ -674,8 +707,10 @@ def build_html(rows: list[dict], stage_cols: list[str]) -> str:
   <div class="note-box">
     <strong>Note:</strong> All 4 datasets are now shown as dots.
     Xu et al. 2023 (purple) covers CS12–CS15-16 (≈PCW&nbsp;4–5),
-    providing the earliest cardiac progenitor timepoints (SHF, AV canal,
+    providing the earliest cardiac progenitor timepoints (Second Heart Field [SHF], AV canal,
     sinoatrial node) not present in other datasets.
+    Striped rows (⊗&nbsp;LINEAGE&nbsp;HOLDOUT) are withheld from all train/val/test splits
+    to assess generalisation across unseen cell identity.
   </div>
 </body>
 </html>"""

@@ -1,8 +1,10 @@
 {
   "metadata": {
     "description": "Canonical cell-type harmonization map anchored to human heart development lineage tree",
-    "canonical_count": 50,
-    "tree_anchor_count": 47
+    "canonical_count": 53,
+    "tree_anchor_count": 50,
+    "last_updated": "2026-05-27",
+    "changes": "Expanded lineage_tree_aliases with all CXG, Xu, Lázár, Tyser dataset labels. Added SA Node Pacemaker Cell, AV Canal Endocardial Cells, Cardiogenic Mesoderm as new canonical types. Made all aliases lowercase to support case-insensitive lookup. See harmonization_decisions.md."
   },
   "lineage_tree_aliases": {
     ": Cell Types we have in our dataset": [
@@ -10,18 +12,38 @@
     ],
     "Cardiac Muscle Cell": [
       "Cardiac Muscle Cell",
-      "Fetal Cardiomyocyte"
+      "Fetal Cardiomyocyte",
+      "cardiomyocyte",
+      "cardiac muscle cell",
+      "fetal cardiomyocyte"
     ],
     "Ventricular Cardiomyocytes": [
       "Ventricular Cardiac Muscle Cell",
-      "Ventricular Cardiomyocytes"
+      "Ventricular Cardiomyocytes",
+      "ventricle cardiomyocyte",
+      "ventricular cardiac muscle cell"
     ],
     "Regular Atrial Cardiac Myocyte": [
-      "Regular Atrial Cardiac Myocyte"
+      "Regular Atrial Cardiac Myocyte",
+      "regular atrial cardiac myocyte",
+      "atria cardiomyocyte"
+    ],
+    "SA Node Pacemaker Cell": [
+      "SA Node Pacemaker Cell",
+      "sinoatrial node (SAN)",
+      "SA node",
+      "SAN"
     ],
     "Endocardial Cell": [
       "Endocardial Cell",
-      "Endocardial Endothelial Cell"
+      "Endocardial Endothelial Cell",
+      "endocardial cell",
+      "endocardium"
+    ],
+    "AV Canal Endocardial Cells": [
+      "AV Canal Endocardial Cells",
+      "atrioventricular canal",
+      "AV canal"
     ],
     "Atrial Septum Endothelial Cell": [
       "AtrSept_EC",
@@ -32,7 +54,9 @@
     ],
     "Endocardial Cushion": [
       "Cushion Mesenchymal Cells",
-      "Endocardial Cushion"
+      "Endocardial Cushion",
+      "endocardial derived cell",
+      "endocardial derived cells"
     ],
     "Valve Mesenchymal Cells": [
       "Valve Mesenchymal Cell",
@@ -44,65 +68,97 @@
     "Outflow Valve Endothelial Cells": [
       "Outflow Valve Endothelial Cells"
     ],
+    "Cardiogenic Mesoderm": [
+      "Cardiogenic Mesoderm",
+      "Second heart field (SHF)",
+      "SHF",
+      "cardiogenic mesoderm"
+    ],
     "Cardiac Mesenchymal Cell": [
-      "Cardiac Mesenchymal Cell"
+      "Cardiac Mesenchymal Cell",
+      "cardiac mesenchymal cell"
     ],
     "Stromal Cell": [
-      "Stromal Cell"
+      "Stromal Cell",
+      "stromal cell"
     ],
     "Mesenchymal Stem Cell": [
-      "Mesenchymal Stem Cell"
+      "Mesenchymal Stem Cell",
+      "mesenchymal stem cell"
     ],
     "Fibroblast": [
-      "Fibroblast"
+      "Fibroblast",
+      "fibroblast"
     ],
     "Hematopoietic Cell": [
-      "Hematopoietic Cell"
+      "Hematopoietic Cell",
+      "hematopoietic cell",
+      "cord blood hematopoietic stem cell",
+      "hemogenic endothelial progenitor",
+      "megakaryocyte"
     ],
     "Myeloid Cell": [
-      "Myeloid Cell"
+      "Myeloid Cell",
+      "myeloid cell"
     ],
     "Monocyte": [
-      "Monocyte"
+      "Monocyte",
+      "monocyte"
     ],
     "Macrophage": [
-      "Macrophage"
+      "Macrophage",
+      "macrophage"
     ],
     "Neutrophil": [
-      "Neutrophil"
+      "Neutrophil",
+      "neutrophil"
     ],
     "Dendritic Cell": [
-      "Dendritic Cell"
+      "Dendritic Cell",
+      "dendritic cell"
     ],
     "Professional Antigen Presenting Cell": [
-      "Professional Antigen Presenting Cell"
+      "Professional Antigen Presenting Cell",
+      "professional antigen presenting cell"
     ],
     "Leukocyte": [
-      "Leukocyte"
+      "Leukocyte",
+      "leukocyte"
     ],
     "Innate Lymphoid Cell": [
-      "Innate Lymphoid Cell"
+      "Innate Lymphoid Cell",
+      "innate lymphoid cell"
     ],
     "T Cell": [
-      "T Cell"
+      "T Cell",
+      "T cell"
     ],
     "Erythroid Progenitor Cell": [
-      "Erythroid Progenitor Cell"
+      "Erythroid Progenitor Cell",
+      "erythroid progenitor cell"
     ],
     "Erythroblast": [
-      "Erythroblast"
+      "Erythroblast",
+      "erythroblast"
     ],
     "Erythroid Lineage Cell": [
-      "Erythroid Lineage Cell"
+      "Erythroid Lineage Cell",
+      "erythroid lineage cell"
     ],
     "Erythrocyte": [
-      "Erythrocyte"
+      "Erythrocyte",
+      "erythrocyte",
+      "erythrocyte (CS7)"
     ],
     "Mesothelial Cell of Epicardium": [
-      "Mesothelial Cell of Epicardium"
+      "Mesothelial Cell of Epicardium",
+      "mesothelial cell of epicardium",
+      "epicardium"
     ],
     "Epicardium Derived Cell": [
-      "Epicardium Derived Cell"
+      "Epicardium Derived Cell",
+      "epicardial derived cell",
+      "epicardial derived cells"
     ],
     "Cardiac Fibroblast": [
       "Cardiac Fibroblast",
@@ -114,51 +170,71 @@
     ],
     "Pericyte": [
       "Pericyte",
+      "pericyte",
+      "pericyte (myocardium)",
       "Pericyte-like Mesenchymal Cell"
     ],
     "Adipocyte": [
-      "Adipocyte"
+      "Adipocyte",
+      "adipocyte"
     ],
     "Epicardial Adipocyte": [
-      "Epicardial Adipocyte"
+      "Epicardial Adipocyte",
+      "epicardial adipocyte"
     ],
     "Vascular Endothelial Cell": [
       "Vascular Endothelial Cell",
-      "endothelial cell of vascular tree"
+      "endothelial cell of vascular tree",
+      "endothelial cell",
+      "endothelium"
     ],
     "Capillary Endothelial Cell": [
-      "Capillary Endothelial Cell"
+      "Capillary Endothelial Cell",
+      "capillary endothelial cell"
     ],
     "Arterial Endothelial Cell": [
       "Arterial Endothelial Cell",
-      "Endothelial Cell of Artery"
+      "Endothelial Cell of Artery",
+      "endothelial cell of artery"
     ],
     "Venous Endothelial Cell": [
       "Vein Endothelial Cell",
-      "Venous Endothelial Cell"
+      "Venous Endothelial Cell",
+      "vein endothelial cell"
     ],
     "Lymphatic Endothelial Cell": [
       "Endothelial Cell of Lymphatic Vessel",
-      "Lymphatic Endothelial Cell"
+      "Lymphatic Endothelial Cell",
+      "endothelial cell of lymphatic vessel"
     ],
     "Dermis Microvascular Lymphatic Endothelial Cell": [
       "Dermis Microvascular Lymphatic Endothelial Cell",
       "dermis microvascular lymphatic vessel endothelial cell"
     ],
     "Neural Cell": [
-      "Neural Cell"
+      "Neural Cell",
+      "neural cell"
     ],
     "Neuron": [
-      "Neuron"
+      "Neuron",
+      "neuron"
     ],
     "Visceromotor Neuron": [
-      "Visceromotor Neuron"
+      "Visceromotor Neuron",
+      "visceromotor neuron"
     ],
     "Schwann Cell": [
-      "Schwann Cell"
+      "Schwann Cell",
+      "schwann cell",
+      "Schwann cell"
+    ],
+    "Valve Interstitial Cell": [
+      "Valve Interstitial Cell",
+      "valve interstitial cell"
     ],
     "Outflow Tract Smooth Muscle Cell": [
-      "Outflow Tract Smooth Muscle Cell"
+      "Outflow Tract Smooth Muscle Cell",
+      "outflow tract smooth muscle cell"
     ]
   },
   "harmonization_map": {

@@ -50,7 +50,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from datasets import concatenate_datasets, disable_caching, load_from_disk
+from datasets import Features, Value, concatenate_datasets, disable_caching, load_from_disk
 
 disable_caching()
 
@@ -61,34 +61,54 @@ disable_caching()
 _DATA = Path("/gladstone/theodoris/lab/enockniyonkuru/maxtoki_development_data")
 _SHARED = Path("/gladstone/theodoris/lab/enockniyonkuru/maxtoki_brain_aging_data/data")
 
+# Path to the pre-tokenized Tyser 2021 gastrulation dataset (already in .dataset format,
+# no re-tokenization needed).  All Tyser cells are CS7 gastrulation → fixed_pcw=2.5.
+_TYSER_DATASET = (
+    _DATA
+    / "source_4_lab_directory"
+    / "05_tyser_2021_gastrulation_atlas"
+    / "E-MTAB-9388.dataset"
+)
+
 DEFAULT_SOURCE_DATASETS: dict[str, dict] = {
     # key           → tokenized .dataset path
-    #               → native cell-type column name
-    #               → native developmental-stage column name (or None)
+    #               → native cell-type column name in the tokenized dataset
+    #               → native stage column name (or None if fixed_pcw is set)
     #               → optional fixed pcw float (overrides stage parsing)
+    #               → optional 'optional' bool — if True, skip gracefully when missing
+    #
+    # NOTE on stage_col: TranscriptomeTokenizer always stores the time_column as
+    # "time" in the output dataset.  Tokenize-time custom_attr_name_dicts should
+    # use time_column=<stage_obs_col> so the stage ends up as "time" here.
     "CXG": {
         "path": _DATA / "tokenized" / "cxg_heart_dev.dataset",
         "cell_type_col": "cell_type",
-        "stage_col": "development_stage",
+        "stage_col": "time",  # tokenizer stores development_stage → "time"
         "fixed_pcw": None,
+        "optional": False,
     },
     "Tyser": {
-        "path": _DATA / "tokenized" / "tyser_heart_dev.dataset",
-        "cell_type_col": "cluster",
-        "stage_col": "development_stage",
-        "fixed_pcw": None,
+        # Already tokenized; CS7 gastrulation → fixed PCW 2.5.
+        # Contains 'cell_type' (cluster labels) but no development_stage column.
+        "path": _TYSER_DATASET,
+        "cell_type_col": "cell_type",
+        "stage_col": None,
+        "fixed_pcw": 2.5,
+        "optional": True,
     },
     "Xu": {
         "path": _DATA / "tokenized" / "xu_heart_dev.dataset",
-        "cell_type_col": "cell_type",
-        "stage_col": "development_stage",
+        "cell_type_col": "cell_type",   # tokenizer maps annotation → "cell_type"
+        "stage_col": "time",            # tokenizer maps stage → "time"
         "fixed_pcw": None,
+        "optional": False,
     },
     "Lazar": {
         "path": _DATA / "tokenized" / "lazar_hl_heart_dev.dataset",
         "cell_type_col": "cell_type",
-        "stage_col": "pcw",      # Lázár often has a numeric PCW column
+        "stage_col": "time",  # tokenizer maps age/pcw → "time"
         "fixed_pcw": None,
+        "optional": True,   # skip if not yet tokenized (source is R-only currently)
     },
 }
 
@@ -99,11 +119,20 @@ DEFAULT_HARMONIZATION_MAP = Path(
 
 DEFAULT_OUTPUT_DIR = _DATA / "finetuning_heart_dev"
 
-# Stage-based held-out windows (in PCW).
-DEFAULT_VAL_PCW_MIN = 10.0
-DEFAULT_VAL_PCW_MAX = 12.0
-DEFAULT_TEST_PCW_MIN = 13.0
-DEFAULT_TEST_PCW_MAX = 16.0
+# ── Finalized train / val / test split ───────────────────────────────────────
+# Val  : PCW 10 (CXG + Lázár, cardiomyocyte maturation onset) and
+#         PCW 20 (CXG only, mid-fetal).  Two disjoint timepoints, not a range.
+# Test : PCW 7  (Lázár only; genuinely interpolated between PCW 6 and 8 train).
+# Train: every other PCW timepoint not matched by val/test points.
+# Lineage holdouts are withheld from ALL splits to probe cell-identity
+#   generalisation independently of temporal generalisation.
+DEFAULT_VAL_PCW_POINTS: list[float] = [10.0, 20.0]
+DEFAULT_TEST_PCW_POINTS: list[float] = [7.0]
+DEFAULT_PCW_TOLERANCE: float = 0.15   # ±PCW when matching a specific timepoint
+DEFAULT_LINEAGE_HOLDOUT_CELL_TYPES: set[str] = {
+    "Epicardial / EPDC",
+    "Vascular EC",
+}
 
 # ---------------------------------------------------------------------------
 # PCW parsing helpers
@@ -126,6 +155,14 @@ _CARNEGIE_TO_PCW: dict[int, float] = {
 
 # Embryonic day → PCW (used for Tyser day-labeled cells; ~Day 16 = PCW 2.3)
 _DAY_RE = re.compile(r"day\s*(\d+(?:\.\d+)?)", re.IGNORECASE)
+
+# Carnegie-stage range: "CS13-14", "CS15–16" → average of both stages
+_CARNEGIE_RANGE_RE = re.compile(
+    r"(?:carnegie\s+stage|CS)\s*(\d+)[-\u2013](\d+)", re.IGNORECASE
+)
+
+# Short week format: "w7", "w8.5" (Lázár-style age column)
+_WEEK_SHORT_RE = re.compile(r"^w(\d+(?:\.\d+)?)$", re.IGNORECASE)
 
 
 def parse_pcw(stage_value) -> float | None:
@@ -157,7 +194,27 @@ def parse_pcw(stage_value) -> float | None:
     if match:
         return float(match.group(1))
 
-    # Carnegie stage: "Carnegie stage 17" or "CS17" → map to PCW
+    # Short week format (Lázár-style): "w7" → 7.0 PCW
+    match = _WEEK_SHORT_RE.match(text)
+    if match:
+        return float(match.group(1))
+
+    # Carnegie-stage range: "CS13-14" → average PCW of both stages
+    match = _CARNEGIE_RANGE_RE.search(text)
+    if match:
+        cs1 = int(match.group(1))
+        cs2 = int(match.group(2))
+        pcw1 = _CARNEGIE_TO_PCW.get(cs1)
+        pcw2 = _CARNEGIE_TO_PCW.get(cs2)
+        if pcw1 is not None and pcw2 is not None:
+            return round((pcw1 + pcw2) / 2.0, 2)
+        if pcw1 is not None:
+            return pcw1
+        if pcw2 is not None:
+            return pcw2
+        return None
+
+    # Carnegie stage single: "Carnegie stage 17" or "CS17" → map to PCW
     match = _CARNEGIE_RE.search(text)
     if match:
         cs = int(match.group(1))
@@ -168,6 +225,18 @@ def parse_pcw(stage_value) -> float | None:
     if match:
         day = float(match.group(1))
         return round(day / 7.0, 2)
+
+    # Generic "embryonic stage" / "embryonic human stage" → PCW 5.5
+    # Decision: CXG labels ~22,557 cells with this vague UBERON term (no specific
+    # week).  The human embryonic period spans PCW 3–8; PCW 5.5 is the midpoint
+    # and corresponds to active cardiac morphogenesis (Carnegie stage ~13–15).
+    # This is a documented approximation; see cell_type_harmonization/harmonization_decisions.md.
+    if text.lower() in (
+        "embryonic stage",
+        "embryonic human stage",
+        "human embryonic stage",
+    ):
+        return 5.5
 
     return None
 
@@ -195,8 +264,9 @@ def load_harmonization_map(path: Path) -> dict[str, str]:
         if canonical.startswith(":"):
             continue
         for alias in aliases:
-            alias_to_canonical[alias.strip()] = canonical
-        alias_to_canonical[canonical.strip()] = canonical
+            # Lowercase keys so lookup is case-insensitive
+            alias_to_canonical[alias.strip().lower()] = canonical
+        alias_to_canonical[canonical.strip().lower()] = canonical
     return alias_to_canonical
 
 
@@ -230,10 +300,17 @@ def load_and_standardize_source(
     alias_to_canonical: dict[str, str],
     nproc: int,
     max_cells: int | None,
+    overwrite: bool = False,
 ) -> object:
     """Load one source tokenized dataset and add standardized columns."""
     ds_path = Path(cfg["path"])
     if not ds_path.exists():
+        if cfg.get("optional", False):
+            print(
+                f"  [SKIP] {source_name}: tokenized dataset not found at {ds_path}. "
+                "Mark as optional=False or run tokenization first to include it."
+            )
+            return None
         raise FileNotFoundError(
             f"Tokenized dataset for source '{source_name}' not found at {ds_path}. "
             "Run the upstream tokenization step first."
@@ -269,7 +346,7 @@ def load_and_standardize_source(
     def add_standard_columns(batch):
         cell_types = batch[cell_type_col]
         canonical_types = [
-            alias_to_canonical.get(str(ct).strip(), None)
+            alias_to_canonical.get(str(ct).strip().lower(), None)
             for ct in cell_types
         ]
         if fixed_pcw is not None:
@@ -290,7 +367,20 @@ def load_and_standardize_source(
             "source_dataset": [source_name] * len(cell_types),
         }
 
-    ds = ds.map(add_standard_columns, batched=True, num_proc=num_proc)
+    # Build explicit output features so multiprocess workers agree on types
+    # even when some shards have all-None values (which Arrow infers as 'null').
+    _new_cols = Features({
+        "canonical_cell_type": Value("string"),
+        "dev_time_pcw":        Value("float64"),
+        "dev_time_num":        Value("int32"),
+        "source_dataset":      Value("string"),
+    })
+    out_features = Features({**ds.features, **_new_cols})
+    use_cache = not overwrite
+    ds = ds.map(
+        add_standard_columns, batched=True, num_proc=num_proc,
+        features=out_features, load_from_cache_file=use_cache,
+    )
 
     # Filter to cells with valid canonical type and parseable PCW
     n_before = len(ds)
@@ -302,6 +392,7 @@ def load_and_standardize_source(
             and ex["dev_time_num"] > 0
         ),
         num_proc=num_proc,
+        load_from_cache_file=use_cache,
     )
     n_after = len(ds)
     print(
@@ -324,7 +415,15 @@ def main() -> None:
         help="Path to the cell_type_harmonization_map.json file.",
     )
     parser.add_argument(
-        "--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
+        "--data-root", type=Path, default=None,
+        help=(
+            "Base data root (e.g. /gladstone/theodoris/lab/.../maxtoki_development_data). "
+            "When set, --output-dir defaults to DATA_ROOT/finetuning_heart_dev and "
+            "per-source paths default to DATA_ROOT/tokenized/<source>.dataset."
+        ),
+    )
+    parser.add_argument(
+        "--output-dir", type=Path, default=None,
         help="Root output directory for all prepared datasets and manifests.",
     )
     # Per-source dataset overrides (comma-separated key=path pairs)
@@ -339,11 +438,30 @@ def main() -> None:
         "--sources", default=",".join(DEFAULT_SOURCE_DATASETS.keys()),
         help="Comma-separated list of source names to include (default: all four).",
     )
-    # Stage-based split thresholds
-    parser.add_argument("--val-pcw-min", type=float, default=DEFAULT_VAL_PCW_MIN)
-    parser.add_argument("--val-pcw-max", type=float, default=DEFAULT_VAL_PCW_MAX)
-    parser.add_argument("--test-pcw-min", type=float, default=DEFAULT_TEST_PCW_MIN)
-    parser.add_argument("--test-pcw-max", type=float, default=DEFAULT_TEST_PCW_MAX)
+    # Point-based split (specific PCW values, not contiguous ranges)
+    parser.add_argument(
+        "--val-pcw-points",
+        default=",".join(str(p) for p in DEFAULT_VAL_PCW_POINTS),
+        help="Comma-separated PCW values to hold out for validation (e.g. '10.0,20.0').",
+    )
+    parser.add_argument(
+        "--test-pcw-points",
+        default=",".join(str(p) for p in DEFAULT_TEST_PCW_POINTS),
+        help="Comma-separated PCW values to hold out for test (e.g. '7.0').",
+    )
+    parser.add_argument(
+        "--pcw-tolerance", type=float, default=DEFAULT_PCW_TOLERANCE,
+        help="±PCW tolerance when matching cells to a specific holdout timepoint.",
+    )
+    # Lineage holdouts — excluded from every split
+    parser.add_argument(
+        "--lineage-holdout-cell-types",
+        default=",".join(sorted(DEFAULT_LINEAGE_HOLDOUT_CELL_TYPES)),
+        help=(
+            "Comma-separated canonical cell types to exclude from all train/val/test "
+            "splits (lineage generalisation holdout)."
+        ),
+    )
     # Optional per-source cell caps (for debugging)
     parser.add_argument(
         "--max-cells-per-source", type=int, default=None,
@@ -352,6 +470,26 @@ def main() -> None:
     parser.add_argument("--nproc", type=int, default=8)
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
+
+    # Resolve data-root derived defaults
+    if args.data_root is not None:
+        data_root = args.data_root.resolve()
+        if args.output_dir is None:
+            args.output_dir = data_root / "finetuning_heart_dev"
+        # Propagate tokenized sub-paths from data_root unless already overridden
+        _tok = data_root / "tokenized"
+        _tok_defaults = {
+            "CXG":   _tok / "cxg_heart_dev.dataset",
+            "Tyser": data_root / "source_4_lab_directory" / "05_tyser_2021_gastrulation_atlas" / "E-MTAB-9388.dataset",
+            "Xu":    _tok / "xu_heart_dev.dataset",
+            "Lazar": _tok / "lazar_hl_heart_dev.dataset",
+        }
+        if args.source_dataset_paths is None:
+            args.source_dataset_paths = ",".join(
+                f"{k}={v}" for k, v in _tok_defaults.items()
+            )
+    if args.output_dir is None:
+        args.output_dir = DEFAULT_OUTPUT_DIR
 
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -387,9 +525,28 @@ def main() -> None:
     all_datasets = []
     for name in active_sources:
         ds = load_and_standardize_source(
-            name, source_cfgs[name], alias_to_canonical, args.nproc, args.max_cells_per_source
+            name, source_cfgs[name], alias_to_canonical, args.nproc, args.max_cells_per_source,
+            overwrite=args.overwrite,
         )
-        all_datasets.append(ds)
+        if ds is not None:
+            all_datasets.append(ds)
+
+    if not all_datasets:
+        raise RuntimeError("No source datasets loaded. Check paths and tokenization.")
+
+    # Align the 'time' column type across sources before concatenating.
+    # The tokenizer stores development_stage as 'time'; CXG/Xu have it as
+    # string (UBERON labels), Lázár stores numeric PCW floats, and Tyser has
+    # no 'time' column at all.  Cast everything to string so concatenation
+    # succeeds (dev_time_pcw already holds the parsed numeric value).
+    def _cast_time_to_str(ds):
+        if "time" not in ds.column_names:
+            return ds
+        if ds.features["time"] != Value("string"):
+            ds = ds.cast_column("time", Value("string"))
+        return ds
+
+    all_datasets = [_cast_time_to_str(d) for d in all_datasets]
 
     print("Concatenating all sources...")
     merged = concatenate_datasets(all_datasets)
@@ -419,24 +576,47 @@ def main() -> None:
     )
     print(f"Cell types with ≥2 PCW timepoints: {sorted(multi_time_types)}")
 
-    # Stage-based split
-    val_min = args.val_pcw_min
-    val_max = args.val_pcw_max
-    test_min = args.test_pcw_min
-    test_max = args.test_pcw_max
+    # ── Lineage holdout filter ──────────────────────────────────────────────
+    lineage_holdout_types: set[str] = {
+        ct.strip()
+        for ct in args.lineage_holdout_cell_types.split(",")
+        if ct.strip()
+    }
+    if lineage_holdout_types:
+        n_before = len(merged)
+        merged = merged.filter(
+            lambda ex: ex["canonical_cell_type"] not in lineage_holdout_types,
+            num_proc=map_num_proc(args.nproc),
+        )
+        print(
+            f"After removing lineage holdout cell types {sorted(lineage_holdout_types)}: "
+            f"{len(merged):,} cells ({n_before - len(merged):,} dropped)"
+        )
+
+    # ── Point-based split ───────────────────────────────────────────────────
+    val_pcw_points = [float(p) for p in args.val_pcw_points.split(",") if p.strip()]
+    test_pcw_points = [float(p) for p in args.test_pcw_points.split(",") if p.strip()]
+    pcw_tol = args.pcw_tolerance
     num_proc = map_num_proc(args.nproc)
+
+    def _near(pcw: float, targets: list[float], tol: float) -> bool:
+        return any(abs(pcw - t) <= tol for t in targets)
 
     def _is_val(ex):
         pcw = ex["dev_time_pcw"]
-        return pcw is not None and val_min <= pcw <= val_max
+        return pcw is not None and _near(pcw, val_pcw_points, pcw_tol)
 
     def _is_test(ex):
         pcw = ex["dev_time_pcw"]
-        return pcw is not None and test_min <= pcw <= test_max
+        return pcw is not None and _near(pcw, test_pcw_points, pcw_tol)
 
     def _is_train(ex):
         pcw = ex["dev_time_pcw"]
-        return pcw is not None and not (val_min <= pcw <= val_max) and not (test_min <= pcw <= test_max)
+        return (
+            pcw is not None
+            and not _near(pcw, val_pcw_points, pcw_tol)
+            and not _near(pcw, test_pcw_points, pcw_tol)
+        )
 
     train_ds = merged.filter(_is_train, num_proc=num_proc)
     val_ds = merged.filter(_is_val, num_proc=num_proc)
@@ -457,9 +637,15 @@ def main() -> None:
         "harmonization_map": str(args.harmonization_map),
         "output_dir": str(output_dir),
         "active_sources": active_sources,
-        "val_pcw_window": [val_min, val_max],
-        "test_pcw_window": [test_min, test_max],
-        "train_pcw_note": "PCW < val_min OR PCW > test_max",
+        "split_strategy": "point-based",
+        "val_pcw_points": val_pcw_points,
+        "test_pcw_points": test_pcw_points,
+        "pcw_tolerance": pcw_tol,
+        "lineage_holdout_cell_types": sorted(lineage_holdout_types),
+        "train_pcw_note": (
+            f"All PCW not within ±{pcw_tol} of val {val_pcw_points} or "
+            f"test {test_pcw_points} points; excludes lineage holdouts"
+        ),
         "n_merged_cells_after_filter": len(merged),
         "n_train_cells": len(train_ds),
         "n_val_cells": len(val_ds),
@@ -474,8 +660,9 @@ def main() -> None:
     save_json(manifest_path, manifest)
 
     print(f"Train: {len(train_ds):,} cells → {train_path}")
-    print(f"Val:   {len(val_ds):,} cells  → {val_path}  (PCW {val_min}–{val_max})")
-    print(f"Test:  {len(test_ds):,} cells  → {test_path} (PCW {test_min}–{test_max})")
+    print(f"Val:   {len(val_ds):,} cells  → {val_path}  (PCW {val_pcw_points}, ±{pcw_tol})")
+    print(f"Test:  {len(test_ds):,} cells  → {test_path} (PCW {test_pcw_points}, ±{pcw_tol})")
+    print(f"Lineage holdouts excluded: {sorted(lineage_holdout_types)}")
     print(f"Manifest: {manifest_path}")
 
 

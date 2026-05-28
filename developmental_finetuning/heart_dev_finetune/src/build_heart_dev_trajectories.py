@@ -85,6 +85,32 @@ def map_num_proc(nproc: int | None) -> int | None:
     return nproc if nproc and nproc > 1 else None
 
 
+def filter_long_cells(
+    source_path: Path,
+    max_length: int,
+    output_path: Path,
+    nproc: int,
+) -> Path:
+    """Return *output_path* containing only cells with ``length <= max_length``.
+
+    Loads the dataset at *source_path*, filters by the ``length`` column, and
+    saves a new dataset to *output_path*.  If *output_path* already exists it
+    is removed first.  The returned path is the same as *output_path*.
+    """
+    if output_path.exists():
+        shutil.rmtree(output_path)
+    ds = load_from_disk(str(source_path))
+    before = len(ds)
+    ds = ds.filter(lambda ex: ex["length"] <= max_length, num_proc=map_num_proc(nproc))
+    after = len(ds)
+    print(
+        f"  filter_long_cells: kept {after:,}/{before:,} cells "
+        f"(max_length={max_length}, dropped {before - after:,})"
+    )
+    ds.save_to_disk(str(output_path))
+    return output_path
+
+
 # ---------------------------------------------------------------------------
 # Mask & metadata helpers
 # ---------------------------------------------------------------------------
@@ -165,6 +191,7 @@ def build_split(
     model_input_size: int,
     overwrite: bool,
     time_bin_length: int | None = None,
+    max_cell_length: int | None = None,
 ) -> dict:
     """Assemble, mask, and save the train trajectory split."""
     split_dir = output_dir / split_name
@@ -172,6 +199,12 @@ def build_split(
     output_prefix = f"{split_name}_heart_dev"
     masked_path = split_dir / f"{output_prefix}_masked.dataset"
     remove_if_needed(masked_path, overwrite)
+
+    # Filter cells that are too long to fit in multi-timepoint trajectories.
+    cpa_source = source_dataset
+    if max_cell_length is not None:
+        filtered_path = split_dir / "_filtered_source.dataset"
+        cpa_source = filter_long_cells(source_dataset, max_cell_length, filtered_path, nproc)
 
     cpa_nproc = map_num_proc(nproc)
     cpa_kwargs = dict(
@@ -198,7 +231,7 @@ def build_split(
 
     try:
         dataset_list, blueprint = cpa.generate_cell_paragraph_blueprint(
-            str(source_dataset),
+            str(cpa_source),
             str(split_dir),
             output_prefix,
         )
@@ -259,6 +292,7 @@ def build_eval_split(
     model_input_size: int,
     overwrite: bool,
     time_bin_length: int | None = None,
+    max_cell_length: int | None = None,
 ) -> dict:
     """Build val/test trajectories: context from train stage, query from eval stage.
 
@@ -272,6 +306,42 @@ def build_eval_split(
     output_prefix = f"{split_name}_heart_dev"
     final_path = split_dir / f"{output_prefix}_masked.dataset"
     remove_if_needed(final_path, overwrite)
+
+    # Filter cells that are too long to fit in multi-timepoint trajectories.
+    cpa_train_source = train_source
+    if max_cell_length is not None:
+        filtered_path = split_dir / "_filtered_train_source.dataset"
+        cpa_train_source = filter_long_cells(train_source, max_cell_length, filtered_path, nproc)
+
+    # Filter the eval source by length and restrict both sources to shared cell types.
+    # The QueryAssembler requires every blueprint timegroup to exist in the eval source,
+    # so we must drop train-only types from the blueprint before building it.
+    cpa_eval_source = eval_source
+    if max_cell_length is not None:
+        filtered_eval_path = split_dir / "_filtered_eval_source.dataset"
+        cpa_eval_source = filter_long_cells(eval_source, max_cell_length, filtered_eval_path, nproc)
+
+    train_ds_tmp = load_from_disk(str(cpa_train_source))
+    eval_ds_tmp = load_from_disk(str(cpa_eval_source))
+    train_types = set(train_ds_tmp.unique("canonical_cell_type"))
+    eval_types = set(eval_ds_tmp.unique("canonical_cell_type"))
+    shared_types = train_types & eval_types
+    train_only = train_types - shared_types
+    if train_only:
+        print(
+            f"  {split_name}: {len(train_only)} cell type(s) present in train but not in "
+            f"eval source — dropping from blueprint: {sorted(train_only)}"
+        )
+        restricted_train_path = split_dir / "_restricted_train_source.dataset"
+        if restricted_train_path.exists():
+            shutil.rmtree(restricted_train_path)
+        train_ds_tmp = train_ds_tmp.filter(
+            lambda ex: ex["canonical_cell_type"] in shared_types,
+            num_proc=map_num_proc(nproc),
+        )
+        train_ds_tmp.save_to_disk(str(restricted_train_path))
+        cpa_train_source = restricted_train_path
+    del train_ds_tmp, eval_ds_tmp
 
     cpa_nproc = map_num_proc(nproc)
     cpa_kwargs = dict(
@@ -298,7 +368,7 @@ def build_eval_split(
 
     try:
         dataset_list, blueprint = cpa.generate_cell_paragraph_blueprint(
-            str(train_source),
+            str(cpa_train_source),
             str(split_dir),
             output_prefix,
         )
@@ -338,7 +408,7 @@ def build_eval_split(
         blueprint_dictionary_file=str(blueprint_path),
         time_token_dictionary_file=str(time_dictionary_path),
         cell_paragraph_dataset_file=str(unmasked_path),
-        query_data_files=[str(eval_source)],
+        query_data_files=[str(cpa_eval_source)],
         output_directory=str(split_dir),
         output_prefix=qa_prefix,
     )
@@ -402,6 +472,13 @@ def main() -> None:
         description="Build canonical_cell_type MaxToki train/val trajectories for heart development."
     )
     parser.add_argument("--prepared-root", type=Path, default=DEFAULT_PREPARED_ROOT)
+    parser.add_argument(
+        "--data-root", type=Path, default=None,
+        help=(
+            "Base data root. When set, --prepared-root defaults to DATA_ROOT/finetuning_heart_dev. "
+            "Matches the DATA_ROOT env-var used by the Slurm scripts."
+        ),
+    )
     parser.add_argument("--train-source", type=Path, default=None)
     parser.add_argument("--val-source", type=Path, default=None)
     parser.add_argument("--test-source", type=Path, default=None)
@@ -409,11 +486,16 @@ def main() -> None:
     parser.add_argument("--token-dictionary", type=Path, default=DEFAULT_TOKEN_DICT)
     parser.add_argument("--time-group-columns", default="canonical_cell_type",
                         help="Comma-separated grouping columns. Default: canonical_cell_type.")
-    parser.add_argument("--train-examples", type=int, default=500_000)
-    parser.add_argument("--val-examples", type=int, default=25_000)
-    parser.add_argument("--test-examples", type=int, default=10_000)
+    parser.add_argument("--train-examples", "--max-train-examples", type=int, default=500_000,
+                        dest="train_examples")
+    parser.add_argument("--val-examples", "--max-val-examples", type=int, default=25_000,
+                        dest="val_examples")
+    parser.add_argument("--test-examples", "--max-test-examples", type=int, default=10_000,
+                        dest="test_examples")
     parser.add_argument("--test-only", action="store_true",
                         help="Skip train/val and only rebuild the test split.")
+    parser.add_argument("--skip-train", action="store_true",
+                        help="Skip the train split and only rebuild val (and test if present).")
     parser.add_argument("--min-timepoints", type=int, default=3)
     parser.add_argument("--max-timepoints", type=int, default=4)
     parser.add_argument("--max-repeat-timepoints", type=int, default=1)
@@ -431,7 +513,19 @@ def main() -> None:
             "units (PCW × 10). E.g. 20 = 2-PCW bins. Default: no time-bin balancing."
         ),
     )
+    parser.add_argument(
+        "--max-cell-length", type=int, default=None,
+        help=(
+            "Drop cells whose tokenized length exceeds this value before trajectory assembly. "
+            "Prevents 'cannot truncate' errors when cells are longer than "
+            "model_input_size // max_timepoints. Default: no filter."
+        ),
+    )
     args = parser.parse_args()
+
+    # Resolve --data-root → --prepared-root if caller passed the Slurm-style arg
+    if args.data_root is not None:
+        args.prepared_root = args.data_root.resolve() / "finetuning_heart_dev"
 
     prepared_root = args.prepared_root.resolve()
     output_dir = (args.output_dir or (prepared_root / "trajectories")).resolve()
@@ -486,6 +580,7 @@ def main() -> None:
             "seed": args.seed,
             "nproc": args.nproc,
             "time_bin_length": args.time_bin_length,
+            "max_cell_length": args.max_cell_length,
         },
     }
 
@@ -502,22 +597,24 @@ def main() -> None:
         model_input_size=args.model_input_size,
         overwrite=args.overwrite,
         time_bin_length=args.time_bin_length,
+        max_cell_length=args.max_cell_length,
     )
 
     if not args.test_only:
-        train_result = build_split(
-            "train", train_source, output_dir,
-            num_examples=args.train_examples, seed=args.seed,
-            **common_kwargs,
-        )
+        if not args.skip_train:
+            train_result = build_split(
+                "train", train_source, output_dir,
+                num_examples=args.train_examples, seed=args.seed,
+                **common_kwargs,
+            )
+            manifest["train"] = train_result
+            print(f"Train: {train_result['num_examples_written']:,} examples")
         val_result = build_eval_split(
             "val", train_source, val_source, output_dir,
             num_examples=args.val_examples, seed=args.seed + 1,
             **common_kwargs,
         )
-        manifest["train"] = train_result
         manifest["val"] = val_result
-        print(f"Train: {train_result['num_examples_written']:,} examples")
         print(f"Val:   {val_result['num_examples_written']:,} examples")
 
     if test_source.exists():

@@ -1,0 +1,25 @@
+MaxToki Heart Development Fine-Tuning Plan
+Key design Components:
+Time axis: Developmental time in post-conception weeks (PCW), represented as a float.
+Time grouping: Rather than using (cell type × sex) as in the brain-aging run, I propose grouping by cell lineage, mapping all dataset-specific sub-types to our approved lineage tree using the harmonization dictionary I shared earlier. This keeps the grouping consistent across datasets.
+Starting weights: The foundational 1B maxtoki model, since we have no prior heart-specific weights.
+Dataset: ~493K cells across four datasets (CellxGene heart-dev subset, Tyser et al., Xu et al., Lázár et al.).
+Train/val/test split:
+Since we don't have matched donors across datasets, I propose splitting by developmental stage rather than by donor. two options:
+Option 1 (stage-based split):
+Val: PCW 10, 20, 30: Specific age points spread across the developmental window, covering cardiomyocyte maturation onset, mid-fetal, and late fetal stages.
+Test: PCW 7, 25, 33:  Interleaved with val ages for broad temporal coverage; may be combined with val if hyperparameter fine-tuning is not required.
+Train: all remaining PCW.
+Cell lineage holdout: additionally hold out 2–3 complete cell lineages (depending on the total lineage count) to test generalization across cell identity and developmental time.
+Caveat: specific age points may have uneven cell coverage across datasets; some points may need to be relaxed to a narrow window (e.g., ±1 PCW) to ensure sufficient cells.
+Option 2 (whole-dataset training, held-out cells):
+Train on the full dataset regardless of stage, then hold out specific cells per developmental stage and cell type for evaluation.
+Pro: maximizes training data. Con: risk of the model seeing all stages during training, making generalization harder to assess cleanly.
+
+What we are predicting:
+Time-lapse (developmental time gap between two cells, in PCW)
+Cell state (gene expression trajectory)
+
+Key files:
+Human_heart_development_lineage_tree_with_dataset_synonyms.md
+human_heart_development_lineage_tree_with_dataset_synonyms_v2.txt

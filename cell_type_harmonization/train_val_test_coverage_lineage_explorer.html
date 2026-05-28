@@ -3,11 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cell Coverage by PCW — Train/Val/Test Planning</title>
+  <title>Cell Coverage + Lineage Explorer</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 13px; background: #f5f5f5; padding: 20px; }
+            font-size: 13px; background: #f5f5f5;
+            display: flex; height: 100vh; overflow: hidden; }
+    /* ── Left lineage pane ── */
+    #lineage-pane {
+      width: 300px; min-width: 180px; max-width: 480px;
+      overflow-y: auto; background: #fff;
+      border-right: 2px solid #d0d0d0;
+      padding: 12px 10px;
+      flex-shrink: 0;
+      resize: horizontal;
+    }
+    #lineage-pane h2 { font-size: 0.95rem; color: #1a1a2e; margin-bottom: 4px; }
+    #lineage-pane .pane-sub { font-size: 0.72rem; color: #888; margin-bottom: 10px; line-height:1.4; }
+    #lineage-pane .clear-btn {
+      font-size: 0.72rem; padding: 2px 8px; border: 1px solid #ccc;
+      border-radius: 3px; background: #f5f5f5; cursor: pointer; margin-bottom: 8px;
+    }
+    #lineage-pane .clear-btn:hover { background: #e0e0e0; }
+    /* Tree */
+    ul.ltree { list-style: none; padding-left: 0; }
+    ul.lsubtree { list-style: none; padding-left: 16px; border-left: 1px dashed #d0d0d0; margin-left: 6px; }
+    li.lnode { padding: 1px 0; }
+    .lnode-row {
+      display: flex; align-items: center; gap: 4px;
+      padding: 3px 5px; border-radius: 4px; cursor: pointer;
+      user-select: none;
+    }
+    .lnode-row:hover { background: #eef2ff; }
+    .lnode-row.active { background: #fff3cd; font-weight: 600; }
+    .ltoggle { font-size: 0.65rem; color: #888; width: 10px; flex-shrink: 0; }
+    .lname { font-size: 0.78rem; color: #222; flex: 1; }
+    .lname.no-data { color: #aaa; font-style: italic; }
+    .lcount { font-size: 0.68rem; color: #888; white-space: nowrap; }
+    /* ── Right plot pane ── */
+    #plot-pane { flex: 1; overflow: auto; padding: 16px 20px; }
     h1 { font-size: 1.3rem; margin-bottom: 4px; color: #1a1a2e; }
     .subtitle { color: #666; font-size: 0.82rem; margin-bottom: 14px; }
     .legend-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px;
@@ -27,16 +61,31 @@
   </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════════════
+     LEFT PANE — Lineage Tree
+════════════════════════════════════════════════════════ -->
+<div id="lineage-pane">
+  <h2>🌿 Lineage Tree</h2>
+  <p class="pane-sub">Click a node to highlight matching rows in the dot plot.<br>Drag the pane edge to resize.</p>
+  <button class="clear-btn" onclick="clearHighlights()">✕ Clear highlights</button>
+  <ul class="ltree" id="tree-root"></ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     RIGHT PANE — Coverage Dot Plot
+════════════════════════════════════════════════════════ -->
+<div id="plot-pane">
   <h1>Cell Type Coverage by Developmental Stage</h1>
   <p class="subtitle">
     Dot size ∝ log(cell count). Hover over a dot for exact count.
-    CellxGene, Lázár, and Xu data have per-PCW breakdown; Tyser (CS7) placed at PCW&nbsp;~3.
+    CellxGene, Lázár, and Xu data have per-PCW (Post-Conception Weeks) breakdown; Tyser (Carnegie Stage 7 [CS7]) placed at PCW&nbsp;~3.
   </p>
 
   <div class="legend-row">
     <span style="font-size:11px;font-weight:600;color:#555">Dataset:</span>
     <span class="legend-badge" style="background:#4285f4">CXG — CellxGene heart-dev subset</span>
-    <span class="legend-badge" style="background:#0f9d58">Lázár et al. 2025 (DL clusters)</span>
+    <span class="legend-badge" style="background:#0f9d58">Lázár et al. 2025 (Deep Learning [DL] clusters)</span>
     <span class="legend-badge" style="background:#9c27b0">Xu et al. 2023 (cardiac subset)</span>
     <span class="legend-badge" style="background:#f59e0b">Tyser et al. 2021 (CS7)</span>
   </div>
@@ -49,414 +98,388 @@
   <div class="split-legend">
     <div class="split-item">
       <div class="split-swatch" style="background:rgba(52,168,83,0.25);border:1px dashed #34a853"></div>
-      <span><strong>Val</strong>: PCW 10, 20</span>
+      <span>Proposed <strong>Val</strong> (PCW 10, 20)</span>
     </div>
     <div class="split-item">
       <div class="split-swatch" style="background:rgba(234,67,53,0.18);border:1px dashed #ea4335"></div>
-      <span><strong>Test</strong>: PCW 7</span>
-    </div>
-    <div class="split-item">
-      <div class="split-swatch" style="background:repeating-linear-gradient(45deg,#bbb,#bbb 1px,#fff 1px,#fff 4px);border:1px solid #bbb"></div>
-      <span><strong>Lineage holdout</strong>: Epicardial/EPDC &amp; Vascular EC (excluded from all splits)</span>
+      <span>Proposed <strong>Test</strong> option (PCW 6)</span>
     </div>
   </div>
 
   <div class="scroll-wrap">
     <svg width="1730" height="2310" xmlns="http://www.w3.org/2000/svg">
-      <defs><pattern id="holdout-stripe" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#888" stroke-width="1.5"/></pattern></defs>
-<rect width="1730" height="2310" fill="#ffffff"/>
+      <rect width="1730" height="2310" fill="#ffffff"/>
 <rect x="230" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
 <rect x="358" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
 <rect x="486" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
-<rect x="614" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
-<rect x="678" y="90" width="64" height="2220" fill="rgba(234,67,53,0.11)"/>
+<rect x="550" y="90" width="64" height="2220" fill="rgba(234,67,53,0.10)"/>
+<rect x="614" y="90" width="64" height="2220" fill="rgba(234,67,53,0.10)"/>
 <rect x="742" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
-<rect x="870" y="90" width="64" height="2220" fill="rgba(52,168,83,0.13)"/>
-<rect x="934" y="90" width="64" height="2220" fill="rgba(52,168,83,0.13)"/>
+<rect x="870" y="90" width="64" height="2220" fill="rgba(52,168,83,0.12)"/>
+<rect x="934" y="90" width="64" height="2220" fill="rgba(52,168,83,0.12)"/>
 <rect x="998" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
 <rect x="1126" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
 <rect x="1254" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
 <rect x="1382" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
 <rect x="1510" y="90" width="64" height="2220" fill="rgba(0,0,0,0.02)"/>
-<rect x="1574" y="90" width="64" height="2220" fill="rgba(52,168,83,0.13)"/>
+<rect x="1574" y="90" width="64" height="2220" fill="rgba(52,168,83,0.12)"/>
 <rect x="0" y="90" width="1730" height="24" fill="#fbc02d" opacity="0.18"/>
 <rect x="0" y="90" width="4" height="24" fill="#fbc02d"/>
-<text x="8" y="107" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">TYSER EARLY PROGENITORS (CS7)</text>
-<rect x="0" y="114" width="1730" height="24" fill="#fff8e1"/>
+<text x="8" y="107" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">TYSER EARLY PROGENITORS (Carnegie Stage 7 [CS7])</text>
+<rect x="0" y="114" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="114" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="131" font-size="10" fill="#333" font-family="sans-serif">primitive streak</text>
 <text x="1644" y="131" font-size="9" fill="#666" font-family="sans-serif">n=202</text>
-<rect x="0" y="138" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="138" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="138" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="155" font-size="10" fill="#333" font-family="sans-serif">emergent mesoderm</text>
 <text x="1644" y="155" font-size="9" fill="#666" font-family="sans-serif">n=185</text>
-<rect x="0" y="162" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="162" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="162" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="179" font-size="10" fill="#333" font-family="sans-serif">advanced mesoderm</text>
 <text x="1644" y="179" font-size="9" fill="#666" font-family="sans-serif">n=164</text>
-<rect x="0" y="186" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="186" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="186" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="203" font-size="10" fill="#333" font-family="sans-serif">epiblast cell</text>
 <text x="1644" y="203" font-size="9" fill="#666" font-family="sans-serif">n=133</text>
-<rect x="0" y="210" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="210" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="210" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="227" font-size="10" fill="#333" font-family="sans-serif">nascent mesoderm</text>
 <text x="1644" y="227" font-size="9" fill="#666" font-family="sans-serif">n=98</text>
-<rect x="0" y="234" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="234" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="234" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="251" font-size="10" fill="#333" font-family="sans-serif">yolk sac mesoderm</text>
 <text x="1644" y="251" font-size="9" fill="#666" font-family="sans-serif">n=83</text>
-<rect x="0" y="258" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="258" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="258" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="275" font-size="10" fill="#333" font-family="sans-serif">ectodermal cell</text>
 <text x="1644" y="275" font-size="9" fill="#666" font-family="sans-serif">n=29</text>
-<rect x="0" y="282" width="1730" height="24" fill="#fff8e1"/>
+<rect x="0" y="282" width="230" height="24" fill="#fff8e1"/>
 <rect x="0" y="282" width="4" height="24" fill="#fbc02d"/>
 <text x="10" y="299" font-size="10" fill="#333" font-family="sans-serif">axial mesoderm</text>
 <text x="1644" y="299" font-size="9" fill="#666" font-family="sans-serif">n=23</text>
 <rect x="0" y="306" width="1730" height="24" fill="#e57373" opacity="0.18"/>
 <rect x="0" y="306" width="4" height="24" fill="#e57373"/>
 <text x="8" y="323" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">CARDIOMYOCYTE</text>
-<rect x="0" y="330" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="330" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="330" width="4" height="24" fill="#e57373"/>
 <text x="10" y="347" font-size="10" fill="#333" font-family="sans-serif">cardiac muscle cell</text>
 <text x="1644" y="347" font-size="9" fill="#666" font-family="sans-serif">n=105,295</text>
-<rect x="0" y="354" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="354" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="354" width="4" height="24" fill="#e57373"/>
 <text x="10" y="371" font-size="10" fill="#333" font-family="sans-serif">ventricular cardiac muscle cell</text>
 <text x="1644" y="371" font-size="9" fill="#666" font-family="sans-serif">n=3,160</text>
-<rect x="0" y="378" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="378" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="378" width="4" height="24" fill="#e57373"/>
 <text x="10" y="395" font-size="10" fill="#333" font-family="sans-serif">fetal cardiomyocyte</text>
 <text x="1644" y="395" font-size="9" fill="#666" font-family="sans-serif">n=1,310</text>
-<rect x="0" y="402" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="402" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="402" width="4" height="24" fill="#e57373"/>
 <text x="10" y="419" font-size="10" fill="#333" font-family="sans-serif">regular atrial cardiac myocyte</text>
 <text x="1644" y="419" font-size="9" fill="#666" font-family="sans-serif">n=102</text>
-<rect x="0" y="426" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="426" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="426" width="4" height="24" fill="#e57373"/>
-<text x="10" y="443" font-size="10" fill="#333" font-family="sans-serif">LV_C</text>
+<text x="10" y="443" font-size="10" fill="#333" font-family="sans-serif">LV Compact (LV_C)</text>
 <text x="1644" y="443" font-size="9" fill="#666" font-family="sans-serif">n=4,531</text>
-<rect x="0" y="450" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="450" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="450" width="4" height="24" fill="#e57373"/>
-<text x="10" y="467" font-size="10" fill="#333" font-family="sans-serif">RV_C</text>
+<text x="10" y="467" font-size="10" fill="#333" font-family="sans-serif">RV Compact (RV_C)</text>
 <text x="1644" y="467" font-size="9" fill="#666" font-family="sans-serif">n=2,673</text>
-<rect x="0" y="474" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="474" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="474" width="4" height="24" fill="#e57373"/>
-<text x="10" y="491" font-size="10" fill="#333" font-family="sans-serif">RA</text>
+<text x="10" y="491" font-size="10" fill="#333" font-family="sans-serif">Right Atrial (RA)</text>
 <text x="1644" y="491" font-size="9" fill="#666" font-family="sans-serif">n=2,528</text>
-<rect x="0" y="498" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="498" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="498" width="4" height="24" fill="#e57373"/>
-<text x="10" y="515" font-size="10" fill="#333" font-family="sans-serif">RV_T</text>
+<text x="10" y="515" font-size="10" fill="#333" font-family="sans-serif">RV Trabecular (RV_T)</text>
 <text x="1644" y="515" font-size="9" fill="#666" font-family="sans-serif">n=1,919</text>
-<rect x="0" y="522" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="522" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="522" width="4" height="24" fill="#e57373"/>
-<text x="10" y="539" font-size="10" fill="#333" font-family="sans-serif">LV_T</text>
+<text x="10" y="539" font-size="10" fill="#333" font-family="sans-serif">LV Trabecular (LV_T)</text>
 <text x="1644" y="539" font-size="9" fill="#666" font-family="sans-serif">n=1,630</text>
-<rect x="0" y="546" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="546" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="546" width="4" height="24" fill="#e57373"/>
-<text x="10" y="563" font-size="10" fill="#333" font-family="sans-serif">TM</text>
+<text x="10" y="563" font-size="10" fill="#333" font-family="sans-serif">Trabecular Myocardium (TM)</text>
 <text x="1644" y="563" font-size="9" fill="#666" font-family="sans-serif">n=1,563</text>
-<rect x="0" y="570" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="570" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="570" width="4" height="24" fill="#e57373"/>
-<text x="10" y="587" font-size="10" fill="#333" font-family="sans-serif">LA</text>
+<text x="10" y="587" font-size="10" fill="#333" font-family="sans-serif">Left Atrial (LA)</text>
 <text x="1644" y="587" font-size="9" fill="#666" font-family="sans-serif">n=1,237</text>
-<rect x="0" y="594" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="594" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="594" width="4" height="24" fill="#e57373"/>
-<text x="10" y="611" font-size="10" fill="#333" font-family="sans-serif">TA</text>
+<text x="10" y="611" font-size="10" fill="#333" font-family="sans-serif">Trabecular Atrial (TA)</text>
 <text x="1644" y="611" font-size="9" fill="#666" font-family="sans-serif">n=1,197</text>
-<rect x="0" y="618" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="618" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="618" width="4" height="24" fill="#e57373"/>
-<text x="10" y="635" font-size="10" fill="#333" font-family="sans-serif">AVP_V</text>
+<text x="10" y="635" font-size="10" fill="#333" font-family="sans-serif">AV Progenitor, Ventricular (AVP_V)</text>
 <text x="1644" y="635" font-size="9" fill="#666" font-family="sans-serif">n=1,070</text>
-<rect x="0" y="642" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="642" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="642" width="4" height="24" fill="#e57373"/>
-<text x="10" y="659" font-size="10" fill="#333" font-family="sans-serif">SCV</text>
+<text x="10" y="659" font-size="10" fill="#333" font-family="sans-serif">Sinus Venosus/Caval (SCV)</text>
 <text x="1644" y="659" font-size="9" fill="#666" font-family="sans-serif">n=936</text>
-<rect x="0" y="666" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="666" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="666" width="4" height="24" fill="#e57373"/>
-<text x="10" y="683" font-size="10" fill="#333" font-family="sans-serif">B_V</text>
+<text x="10" y="683" font-size="10" fill="#333" font-family="sans-serif">Bipotent Ventricular (B_V)</text>
 <text x="1644" y="683" font-size="9" fill="#666" font-family="sans-serif">n=838</text>
-<rect x="0" y="690" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="690" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="690" width="4" height="24" fill="#e57373"/>
-<text x="10" y="707" font-size="10" fill="#333" font-family="sans-serif">PM</text>
+<text x="10" y="707" font-size="10" fill="#333" font-family="sans-serif">Papillary Muscle (PM)</text>
 <text x="1644" y="707" font-size="9" fill="#666" font-family="sans-serif">n=686</text>
-<rect x="0" y="714" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="714" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="714" width="4" height="24" fill="#e57373"/>
-<text x="10" y="731" font-size="10" fill="#333" font-family="sans-serif">VM</text>
+<text x="10" y="731" font-size="10" fill="#333" font-family="sans-serif">Ventricular Myocardium (VM)</text>
 <text x="1644" y="731" font-size="9" fill="#666" font-family="sans-serif">n=621</text>
-<rect x="0" y="738" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="738" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="738" width="4" height="24" fill="#e57373"/>
-<text x="10" y="755" font-size="10" fill="#333" font-family="sans-serif">AVP_A</text>
+<text x="10" y="755" font-size="10" fill="#333" font-family="sans-serif">AV Progenitor, Atrial (AVP_A)</text>
 <text x="1644" y="755" font-size="9" fill="#666" font-family="sans-serif">n=270</text>
-<rect x="0" y="762" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="762" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="762" width="4" height="24" fill="#e57373"/>
-<text x="10" y="779" font-size="10" fill="#333" font-family="sans-serif">VCS</text>
+<text x="10" y="779" font-size="10" fill="#333" font-family="sans-serif">Ventricular Conduction Sys. (VCS)</text>
 <text x="1644" y="779" font-size="9" fill="#666" font-family="sans-serif">n=244</text>
-<rect x="0" y="786" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="786" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="786" width="4" height="24" fill="#e57373"/>
-<text x="10" y="803" font-size="10" fill="#333" font-family="sans-serif">B_A</text>
+<text x="10" y="803" font-size="10" fill="#333" font-family="sans-serif">Bipotent Atrial (B_A)</text>
 <text x="1644" y="803" font-size="9" fill="#666" font-family="sans-serif">n=211</text>
-<rect x="0" y="810" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="810" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="810" width="4" height="24" fill="#e57373"/>
-<text x="10" y="827" font-size="10" fill="#333" font-family="sans-serif">MY</text>
+<text x="10" y="827" font-size="10" fill="#333" font-family="sans-serif">Myocardial Progenitor (MY)</text>
 <text x="1644" y="827" font-size="9" fill="#666" font-family="sans-serif">n=150</text>
-<rect x="0" y="834" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="834" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="834" width="4" height="24" fill="#e57373"/>
-<text x="10" y="851" font-size="10" fill="#333" font-family="sans-serif">OFT</text>
+<text x="10" y="851" font-size="10" fill="#333" font-family="sans-serif">Outflow Tract (OFT)</text>
 <text x="1644" y="851" font-size="9" fill="#666" font-family="sans-serif">n=101</text>
-<rect x="0" y="858" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="858" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="858" width="4" height="24" fill="#e57373"/>
 <text x="10" y="875" font-size="10" fill="#333" font-family="sans-serif">ventricle cardiomyocyte</text>
 <text x="1644" y="875" font-size="9" fill="#666" font-family="sans-serif">n=972</text>
-<rect x="0" y="882" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="882" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="882" width="4" height="24" fill="#e57373"/>
 <text x="10" y="899" font-size="10" fill="#333" font-family="sans-serif">atria cardiomyocyte</text>
 <text x="1644" y="899" font-size="9" fill="#666" font-family="sans-serif">n=595</text>
-<rect x="0" y="906" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="906" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="906" width="4" height="24" fill="#e57373"/>
 <text x="10" y="923" font-size="10" fill="#333" font-family="sans-serif">Second heart field (SHF)</text>
 <text x="1644" y="923" font-size="9" fill="#666" font-family="sans-serif">n=373</text>
-<rect x="0" y="930" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="930" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="930" width="4" height="24" fill="#e57373"/>
 <text x="10" y="947" font-size="10" fill="#333" font-family="sans-serif">cardiomyocyte</text>
 <text x="1644" y="947" font-size="9" fill="#666" font-family="sans-serif">n=363</text>
-<rect x="0" y="954" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="954" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="954" width="4" height="24" fill="#e57373"/>
 <text x="10" y="971" font-size="10" fill="#333" font-family="sans-serif">atrioventricular canal</text>
 <text x="1644" y="971" font-size="9" fill="#666" font-family="sans-serif">n=258</text>
-<rect x="0" y="978" width="1730" height="24" fill="#fde8e8"/>
+<rect x="0" y="978" width="230" height="24" fill="#fde8e8"/>
 <rect x="0" y="978" width="4" height="24" fill="#e57373"/>
 <text x="10" y="995" font-size="10" fill="#333" font-family="sans-serif">sinoatrial node (SAN)</text>
 <text x="1644" y="995" font-size="9" fill="#666" font-family="sans-serif">n=105</text>
 <rect x="0" y="1002" width="1730" height="24" fill="#f59e0b" opacity="0.18"/>
 <rect x="0" y="1002" width="4" height="24" fill="#f59e0b"/>
 <text x="8" y="1019" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">ENDOCARDIAL / VALVE</text>
-<rect x="0" y="1026" width="1730" height="24" fill="#fef3e2"/>
+<rect x="0" y="1026" width="230" height="24" fill="#fef3e2"/>
 <rect x="0" y="1026" width="4" height="24" fill="#f59e0b"/>
 <text x="10" y="1043" font-size="10" fill="#333" font-family="sans-serif">endocardial cell</text>
 <text x="1644" y="1043" font-size="9" fill="#666" font-family="sans-serif">n=9,065</text>
-<rect x="0" y="1050" width="1730" height="24" fill="#fef3e2"/>
+<rect x="0" y="1050" width="230" height="24" fill="#fef3e2"/>
 <rect x="0" y="1050" width="4" height="24" fill="#f59e0b"/>
 <text x="10" y="1067" font-size="10" fill="#333" font-family="sans-serif">valve interstitial cell</text>
 <text x="1644" y="1067" font-size="9" fill="#666" font-family="sans-serif">n=3</text>
-<rect x="0" y="1074" width="1730" height="24" fill="#fef3e2"/>
+<rect x="0" y="1074" width="230" height="24" fill="#fef3e2"/>
 <rect x="0" y="1074" width="4" height="24" fill="#f59e0b"/>
 <text x="10" y="1091" font-size="10" fill="#333" font-family="sans-serif">endocardium</text>
 <text x="1644" y="1091" font-size="9" fill="#666" font-family="sans-serif">n=1,020</text>
-<rect x="0" y="1098" width="1730" height="24" fill="#fef3e2"/>
+<rect x="0" y="1098" width="230" height="24" fill="#fef3e2"/>
 <rect x="0" y="1098" width="4" height="24" fill="#f59e0b"/>
 <text x="10" y="1115" font-size="10" fill="#333" font-family="sans-serif">endocardial derived cell</text>
 <text x="1644" y="1115" font-size="9" fill="#666" font-family="sans-serif">n=503</text>
-<rect x="0" y="1122" width="1730" height="24" fill="#34a853" opacity="0.30"/>
+<rect x="0" y="1122" width="1730" height="24" fill="#34a853" opacity="0.18"/>
 <rect x="0" y="1122" width="4" height="24" fill="#34a853"/>
-<text x="8" y="1139" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">EPICARDIAL / EPDC  ⊗ LINEAGE HOLDOUT</text>
-<rect x="0" y="1146" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1146" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<text x="8" y="1139" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">EPICARDIAL / EPDC (Epicardial-Derived Cells)</text>
+<rect x="0" y="1146" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1146" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1163" font-size="10" fill="#333" font-family="sans-serif">fibroblast</text>
 <text x="1644" y="1163" font-size="9" fill="#666" font-family="sans-serif">n=7,183</text>
-<rect x="0" y="1170" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1170" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1170" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1170" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1187" font-size="10" fill="#333" font-family="sans-serif">smooth muscle cell</text>
 <text x="1644" y="1187" font-size="9" fill="#666" font-family="sans-serif">n=5,369</text>
-<rect x="0" y="1194" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1194" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1194" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1194" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1211" font-size="10" fill="#333" font-family="sans-serif">mesothelial cell of epicardium</text>
 <text x="1644" y="1211" font-size="9" fill="#666" font-family="sans-serif">n=2,276</text>
-<rect x="0" y="1218" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1218" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1218" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1218" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1235" font-size="10" fill="#333" font-family="sans-serif">epicardial adipocyte</text>
 <text x="1644" y="1235" font-size="9" fill="#666" font-family="sans-serif">n=1,891</text>
-<rect x="0" y="1242" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1242" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1242" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1242" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1259" font-size="10" fill="#333" font-family="sans-serif">pericyte</text>
 <text x="1644" y="1259" font-size="9" fill="#666" font-family="sans-serif">n=1,134</text>
-<rect x="0" y="1266" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1266" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1266" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1266" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1283" font-size="10" fill="#333" font-family="sans-serif">adipocyte</text>
 <text x="1644" y="1283" font-size="9" fill="#666" font-family="sans-serif">n=1</text>
-<rect x="0" y="1290" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1290" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1290" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1290" width="4" height="24" fill="#34a853"/>
-<text x="10" y="1307" font-size="10" fill="#333" font-family="sans-serif">A_EP</text>
+<text x="10" y="1307" font-size="10" fill="#333" font-family="sans-serif">Atrial Epicardium (A_EP)</text>
 <text x="1644" y="1307" font-size="9" fill="#666" font-family="sans-serif">n=599</text>
-<rect x="0" y="1314" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1314" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1314" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1314" width="4" height="24" fill="#34a853"/>
-<text x="10" y="1331" font-size="10" fill="#333" font-family="sans-serif">V_EP</text>
+<text x="10" y="1331" font-size="10" fill="#333" font-family="sans-serif">Ventricular Epicardium (V_EP)</text>
 <text x="1644" y="1331" font-size="9" fill="#666" font-family="sans-serif">n=262</text>
-<rect x="0" y="1338" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1338" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1338" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1338" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1355" font-size="10" fill="#333" font-family="sans-serif">epicardial derived cell</text>
 <text x="1644" y="1355" font-size="9" fill="#666" font-family="sans-serif">n=785</text>
-<rect x="0" y="1362" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1362" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1362" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1362" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1379" font-size="10" fill="#333" font-family="sans-serif">epicardium</text>
 <text x="1644" y="1379" font-size="9" fill="#666" font-family="sans-serif">n=252</text>
-<rect x="0" y="1386" width="1730" height="24" fill="#e6f4ea"/>
-<rect x="0" y="1386" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1386" width="230" height="24" fill="#e6f4ea"/>
 <rect x="0" y="1386" width="4" height="24" fill="#34a853"/>
 <text x="10" y="1403" font-size="10" fill="#333" font-family="sans-serif">pericyte (myocardium)</text>
 <text x="1644" y="1403" font-size="9" fill="#666" font-family="sans-serif">n=17</text>
 <rect x="0" y="1410" width="1730" height="24" fill="#4285f4" opacity="0.18"/>
 <rect x="0" y="1410" width="4" height="24" fill="#4285f4"/>
 <text x="8" y="1427" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">MESENCHYMAL / STROMAL</text>
-<rect x="0" y="1434" width="1730" height="24" fill="#e8f0fe"/>
+<rect x="0" y="1434" width="230" height="24" fill="#e8f0fe"/>
 <rect x="0" y="1434" width="4" height="24" fill="#4285f4"/>
 <text x="10" y="1451" font-size="10" fill="#333" font-family="sans-serif">stromal cell</text>
 <text x="1644" y="1451" font-size="9" fill="#666" font-family="sans-serif">n=15,955</text>
-<rect x="0" y="1458" width="1730" height="24" fill="#e8f0fe"/>
+<rect x="0" y="1458" width="230" height="24" fill="#e8f0fe"/>
 <rect x="0" y="1458" width="4" height="24" fill="#4285f4"/>
 <text x="10" y="1475" font-size="10" fill="#333" font-family="sans-serif">cardiac mesenchymal cell</text>
 <text x="1644" y="1475" font-size="9" fill="#666" font-family="sans-serif">n=12,228</text>
-<rect x="0" y="1482" width="1730" height="24" fill="#e8f0fe"/>
+<rect x="0" y="1482" width="230" height="24" fill="#e8f0fe"/>
 <rect x="0" y="1482" width="4" height="24" fill="#4285f4"/>
 <text x="10" y="1499" font-size="10" fill="#333" font-family="sans-serif">mesenchymal stem cell</text>
 <text x="1644" y="1499" font-size="9" fill="#666" font-family="sans-serif">n=261</text>
-<rect x="0" y="1506" width="1730" height="24" fill="#8b5cf6" opacity="0.30"/>
+<rect x="0" y="1506" width="1730" height="24" fill="#8b5cf6" opacity="0.18"/>
 <rect x="0" y="1506" width="4" height="24" fill="#8b5cf6"/>
-<text x="8" y="1523" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">VASCULAR EC  ⊗ LINEAGE HOLDOUT</text>
-<rect x="0" y="1530" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1530" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<text x="8" y="1523" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">VASCULAR EC (Endothelial Cell)</text>
+<rect x="0" y="1530" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1530" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1547" font-size="10" fill="#333" font-family="sans-serif">endothelial cell</text>
 <text x="1644" y="1547" font-size="9" fill="#666" font-family="sans-serif">n=9,030</text>
-<rect x="0" y="1554" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1554" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1554" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1554" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1571" font-size="10" fill="#333" font-family="sans-serif">endothelial cell of vascular tree</text>
 <text x="1644" y="1571" font-size="9" fill="#666" font-family="sans-serif">n=4,911</text>
-<rect x="0" y="1578" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1578" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1578" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1578" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1595" font-size="10" fill="#333" font-family="sans-serif">capillary endothelial cell</text>
 <text x="1644" y="1595" font-size="9" fill="#666" font-family="sans-serif">n=1,567</text>
-<rect x="0" y="1602" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1602" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1602" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1602" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1619" font-size="10" fill="#333" font-family="sans-serif">endothelial cell of artery</text>
 <text x="1644" y="1619" font-size="9" fill="#666" font-family="sans-serif">n=903</text>
-<rect x="0" y="1626" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1626" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1626" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1626" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1643" font-size="10" fill="#333" font-family="sans-serif">endothelial cell of lymphatic vessel</text>
 <text x="1644" y="1643" font-size="9" fill="#666" font-family="sans-serif">n=648</text>
-<rect x="0" y="1650" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1650" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1650" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1650" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1667" font-size="10" fill="#333" font-family="sans-serif">dermis microvascular lymphatic vessel endothelial cell</text>
 <text x="1644" y="1667" font-size="9" fill="#666" font-family="sans-serif">n=603</text>
-<rect x="0" y="1674" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1674" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1674" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1674" width="4" height="24" fill="#8b5cf6"/>
 <text x="10" y="1691" font-size="10" fill="#333" font-family="sans-serif">vein endothelial cell</text>
 <text x="1644" y="1691" font-size="9" fill="#666" font-family="sans-serif">n=248</text>
-<rect x="0" y="1698" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1698" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1698" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1698" width="4" height="24" fill="#8b5cf6"/>
-<text x="10" y="1715" font-size="10" fill="#333" font-family="sans-serif">EN</text>
+<text x="10" y="1715" font-size="10" fill="#333" font-family="sans-serif">Endothelium (EN)</text>
 <text x="1644" y="1715" font-size="9" fill="#666" font-family="sans-serif">n=1,573</text>
-<rect x="0" y="1722" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1722" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1722" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1722" width="4" height="24" fill="#8b5cf6"/>
-<text x="10" y="1739" font-size="10" fill="#333" font-family="sans-serif">VE</text>
+<text x="10" y="1739" font-size="10" fill="#333" font-family="sans-serif">Venous Endothelium (VE)</text>
 <text x="1644" y="1739" font-size="9" fill="#666" font-family="sans-serif">n=240</text>
-<rect x="0" y="1746" width="1730" height="24" fill="#f3e8ff"/>
-<rect x="0" y="1746" width="1730" height="24" fill="url(#holdout-stripe)" opacity="0.35"/>
+<rect x="0" y="1746" width="230" height="24" fill="#f3e8ff"/>
 <rect x="0" y="1746" width="4" height="24" fill="#8b5cf6"/>
-<text x="10" y="1763" font-size="10" fill="#333" font-family="sans-serif">LCV</text>
+<text x="10" y="1763" font-size="10" fill="#333" font-family="sans-serif">Lympho-Capillary Vessel (LCV)</text>
 <text x="1644" y="1763" font-size="9" fill="#666" font-family="sans-serif">n=230</text>
 <rect x="0" y="1770" width="1730" height="24" fill="#ec4899" opacity="0.18"/>
 <rect x="0" y="1770" width="4" height="24" fill="#ec4899"/>
 <text x="8" y="1787" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">IMMUNE / HAEMATOPOIETIC</text>
-<rect x="0" y="1794" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1794" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1794" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1811" font-size="10" fill="#333" font-family="sans-serif">myeloid cell</text>
 <text x="1644" y="1811" font-size="9" fill="#666" font-family="sans-serif">n=4,363</text>
-<rect x="0" y="1818" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1818" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1818" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1835" font-size="10" fill="#333" font-family="sans-serif">innate lymphoid cell</text>
 <text x="1644" y="1835" font-size="9" fill="#666" font-family="sans-serif">n=3,004</text>
-<rect x="0" y="1842" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1842" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1842" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1859" font-size="10" fill="#333" font-family="sans-serif">leukocyte</text>
 <text x="1644" y="1859" font-size="9" fill="#666" font-family="sans-serif">n=709</text>
-<rect x="0" y="1866" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1866" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1866" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1883" font-size="10" fill="#333" font-family="sans-serif">megakaryocyte</text>
 <text x="1644" y="1883" font-size="9" fill="#666" font-family="sans-serif">n=361</text>
-<rect x="0" y="1890" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1890" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1890" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1907" font-size="10" fill="#333" font-family="sans-serif">hematopoietic cell</text>
 <text x="1644" y="1907" font-size="9" fill="#666" font-family="sans-serif">n=439</text>
-<rect x="0" y="1914" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1914" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1914" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1931" font-size="10" fill="#333" font-family="sans-serif">macrophage</text>
 <text x="1644" y="1931" font-size="9" fill="#666" font-family="sans-serif">n=112</text>
-<rect x="0" y="1938" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1938" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1938" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1955" font-size="10" fill="#333" font-family="sans-serif">erythrocyte</text>
 <text x="1644" y="1955" font-size="9" fill="#666" font-family="sans-serif">n=131</text>
-<rect x="0" y="1962" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1962" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1962" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="1979" font-size="10" fill="#333" font-family="sans-serif">erythroid lineage cell</text>
 <text x="1644" y="1979" font-size="9" fill="#666" font-family="sans-serif">n=80</text>
-<rect x="0" y="1986" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="1986" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="1986" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2003" font-size="10" fill="#333" font-family="sans-serif">T cell</text>
 <text x="1644" y="2003" font-size="9" fill="#666" font-family="sans-serif">n=11</text>
-<rect x="0" y="2010" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2010" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2010" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2027" font-size="10" fill="#333" font-family="sans-serif">professional antigen presenting cell</text>
 <text x="1644" y="2027" font-size="9" fill="#666" font-family="sans-serif">n=10</text>
-<rect x="0" y="2034" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2034" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2034" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2051" font-size="10" fill="#333" font-family="sans-serif">dendritic cell</text>
 <text x="1644" y="2051" font-size="9" fill="#666" font-family="sans-serif">n=9</text>
-<rect x="0" y="2058" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2058" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2058" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2075" font-size="10" fill="#333" font-family="sans-serif">erythroid progenitor cell</text>
 <text x="1644" y="2075" font-size="9" fill="#666" font-family="sans-serif">n=9</text>
-<rect x="0" y="2082" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2082" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2082" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2099" font-size="10" fill="#333" font-family="sans-serif">cord blood hematopoietic stem cell</text>
 <text x="1644" y="2099" font-size="9" fill="#666" font-family="sans-serif">n=6</text>
-<rect x="0" y="2106" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2106" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2106" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2123" font-size="10" fill="#333" font-family="sans-serif">erythroblast</text>
 <text x="1644" y="2123" font-size="9" fill="#666" font-family="sans-serif">n=6</text>
-<rect x="0" y="2130" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2130" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2130" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2147" font-size="10" fill="#333" font-family="sans-serif">neutrophil</text>
 <text x="1644" y="2147" font-size="9" fill="#666" font-family="sans-serif">n=5</text>
-<rect x="0" y="2154" width="1730" height="24" fill="#fce7f3"/>
+<rect x="0" y="2154" width="230" height="24" fill="#fce7f3"/>
 <rect x="0" y="2154" width="4" height="24" fill="#ec4899"/>
 <text x="10" y="2171" font-size="10" fill="#333" font-family="sans-serif">monocyte</text>
 <text x="1644" y="2171" font-size="9" fill="#666" font-family="sans-serif">n=1</text>
 <rect x="0" y="2178" width="1730" height="24" fill="#00acc1" opacity="0.18"/>
 <rect x="0" y="2178" width="4" height="24" fill="#00acc1"/>
 <text x="8" y="2195" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">NEURAL</text>
-<rect x="0" y="2202" width="1730" height="24" fill="#e0f7fa"/>
+<rect x="0" y="2202" width="230" height="24" fill="#e0f7fa"/>
 <rect x="0" y="2202" width="4" height="24" fill="#00acc1"/>
 <text x="10" y="2219" font-size="10" fill="#333" font-family="sans-serif">neuron</text>
 <text x="1644" y="2219" font-size="9" fill="#666" font-family="sans-serif">n=2,394</text>
-<rect x="0" y="2226" width="1730" height="24" fill="#e0f7fa"/>
+<rect x="0" y="2226" width="230" height="24" fill="#e0f7fa"/>
 <rect x="0" y="2226" width="4" height="24" fill="#00acc1"/>
 <text x="10" y="2243" font-size="10" fill="#333" font-family="sans-serif">neural cell</text>
 <text x="1644" y="2243" font-size="9" fill="#666" font-family="sans-serif">n=1,000</text>
-<rect x="0" y="2250" width="1730" height="24" fill="#e0f7fa"/>
+<rect x="0" y="2250" width="230" height="24" fill="#e0f7fa"/>
 <rect x="0" y="2250" width="4" height="24" fill="#00acc1"/>
 <text x="10" y="2267" font-size="10" fill="#333" font-family="sans-serif">Schwann cell</text>
 <text x="1644" y="2267" font-size="9" fill="#666" font-family="sans-serif">n=535</text>
-<rect x="0" y="2274" width="1730" height="24" fill="#e0f7fa"/>
+<rect x="0" y="2274" width="230" height="24" fill="#e0f7fa"/>
 <rect x="0" y="2274" width="4" height="24" fill="#00acc1"/>
 <text x="10" y="2291" font-size="10" fill="#333" font-family="sans-serif">visceromotor neuron</text>
 <text x="1644" y="2291" font-size="9" fill="#666" font-family="sans-serif">n=348</text>
@@ -480,45 +503,43 @@
 <text x="518" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
 <text x="518" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">Embryonic</text>
 <text x="518" y="43" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">(~PCW 5–7)</text>
-<rect x="554" y="4" width="56" height="14" rx="3" fill="#4285f4" opacity="0.85"/>
-<text x="582" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
-<text x="582" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 6</text>
-<rect x="618" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
-<text x="646" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
-<text x="646" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 6</text>
+<rect x="552" y="2" width="124" height="13" rx="3" fill="#e0e0e0" opacity="0.85"/>
+<text x="614" y="12" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="700">PCW 6</text>
+<rect x="554" y="18" width="56" height="13" rx="3" fill="#4285f4" opacity="0.85"/>
+<text x="582" y="28" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
+<rect x="618" y="18" width="56" height="13" rx="3" fill="#0f9d58" opacity="0.85"/>
+<text x="646" y="28" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
+<text x="614" y="85" text-anchor="middle" font-size="9" fill="#ea4335" font-weight="700" font-family="sans-serif">Test (option)</text>
+<line x1="550" y1="78" x2="678" y2="78" stroke="#ea4335" stroke-width="1.5" stroke-dasharray="3,2"/>
 <rect x="682" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
 <text x="710" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
 <text x="710" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 7</text>
-<text x="710" y="85" text-anchor="middle" font-size="9" fill="#ea4335" font-weight="700" font-family="sans-serif">Test</text>
-<line x1="678" y1="78" x2="742" y2="78" stroke="#ea4335" stroke-width="1.5" stroke-dasharray="3,2"/>
 <rect x="746" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
 <text x="774" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
 <text x="774" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 8</text>
 <rect x="810" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
 <text x="838" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
 <text x="838" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 9</text>
-<rect x="874" y="4" width="56" height="14" rx="3" fill="#4285f4" opacity="0.85"/>
-<text x="902" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
-<text x="902" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 10</text>
-<text x="902" y="85" text-anchor="middle" font-size="9" fill="#34a853" font-weight="700" font-family="sans-serif">Val</text>
-<line x1="870" y1="78" x2="934" y2="78" stroke="#34a853" stroke-width="1.5" stroke-dasharray="3,2"/>
-<rect x="938" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
-<text x="966" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
-<text x="966" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 10</text>
-<text x="966" y="85" text-anchor="middle" font-size="9" fill="#34a853" font-weight="700" font-family="sans-serif">Val</text>
-<line x1="934" y1="78" x2="998" y2="78" stroke="#34a853" stroke-width="1.5" stroke-dasharray="3,2"/>
+<rect x="872" y="2" width="124" height="13" rx="3" fill="#e0e0e0" opacity="0.85"/>
+<text x="934" y="12" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="700">PCW 10</text>
+<rect x="874" y="18" width="56" height="13" rx="3" fill="#4285f4" opacity="0.85"/>
+<text x="902" y="28" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
+<rect x="938" y="18" width="56" height="13" rx="3" fill="#0f9d58" opacity="0.85"/>
+<text x="966" y="28" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
+<text x="934" y="85" text-anchor="middle" font-size="9" fill="#34a853" font-weight="700" font-family="sans-serif">Val</text>
+<line x1="870" y1="78" x2="998" y2="78" stroke="#34a853" stroke-width="1.5" stroke-dasharray="3,2"/>
 <rect x="1002" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
 <text x="1030" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
 <text x="1030" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 10.5</text>
 <rect x="1066" y="4" width="56" height="14" rx="3" fill="#4285f4" opacity="0.85"/>
 <text x="1094" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
 <text x="1094" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 11</text>
-<rect x="1130" y="4" width="56" height="14" rx="3" fill="#4285f4" opacity="0.85"/>
-<text x="1158" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
-<text x="1158" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 12</text>
-<rect x="1194" y="4" width="56" height="14" rx="3" fill="#0f9d58" opacity="0.85"/>
-<text x="1222" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
-<text x="1222" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 12</text>
+<rect x="1128" y="2" width="124" height="13" rx="3" fill="#e0e0e0" opacity="0.85"/>
+<text x="1190" y="12" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="700">PCW 12</text>
+<rect x="1130" y="18" width="56" height="13" rx="3" fill="#4285f4" opacity="0.85"/>
+<text x="1158" y="28" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
+<rect x="1194" y="18" width="56" height="13" rx="3" fill="#0f9d58" opacity="0.85"/>
+<text x="1222" y="28" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">Lázár</text>
 <rect x="1258" y="4" width="56" height="14" rx="3" fill="#4285f4" opacity="0.85"/>
 <text x="1286" y="15" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">CXG</text>
 <text x="1286" y="30" text-anchor="middle" font-size="10" fill="#222" font-family="sans-serif" font-weight="600">PCW 13</text>
@@ -1023,8 +1044,144 @@
     Xu et al. 2023 (purple) covers CS12–CS15-16 (≈PCW&nbsp;4–5),
     providing the earliest cardiac progenitor timepoints (Second Heart Field [SHF], AV canal,
     sinoatrial node) not present in other datasets.
-    Striped rows (⊗&nbsp;LINEAGE&nbsp;HOLDOUT) are withheld from all train/val/test splits
-    to assess generalisation across unseen cell identity.
-  </div>
-</body>
+  </div></div><!-- /plot-pane -->
+
+<script>
+// ── Lineage tree definition ──────────────────────────────────────────────────
+// Each node: { name, labels (SVG row label substrings to match), children }
+const TREE = [
+  { name: "Human Heart Development", labels: [], children: [
+    { name: "Epiblast", labels: ["epiblast cell"], children: [
+      { name: "Ectoderm → Neural", labels: ["neural cell","neuron","visceromotor neuron","Schwann cell"], children: [] },
+      { name: "Primitive Streak", labels: ["primitive streak"], children: [
+        { name: "Mesoderm", labels: ["advanced mesoderm","axial mesoderm","emergent mesoderm","nascent mesoderm","yolk sac mesoderm"], children: [
+          { name: "Cardiogenic Mesoderm → Cardiomyocyte", labels: ["cardiac muscle cell","fetal cardiomyocyte","cardiomyocyte","Myocardial Progenitor"], children: [
+            { name: "Ventricular CMs", labels: ["ventricular cardiac","ventricle cardiomyocyte","LV Compact","RV Compact","LV Trabecular","RV Trabecular","Trabecular Myocardium","Ventricular Myocardium","Bipotent Ventricular","AV Progenitor, Ventricular","Papillary Muscle","Outflow Tract"], children: [] },
+            { name: "Atrial CMs", labels: ["regular atrial","atria cardiomyocyte","Left Atrial","Right Atrial","Trabecular Atrial","Bipotent Atrial","AV Progenitor, Atrial"], children: [] },
+            { name: "Conduction System", labels: ["Ventricular Conduction","Sinus Venosus","sinoatrial node","atrioventricular canal"], children: [] }
+          ]},
+          { name: "Cardiogenic Mesoderm → Endocardial / Valve", labels: ["endocardial cell","endocardium","valve interstitial","Endocardial Cushion","Valve Mesenchymal","Valve Interstitial","Outflow Valve","Inflow Valve"], children: [] },
+          { name: "Splanchnic Mesoderm → Epicardial / EPDC", labels: ["mesothelial cell of epicardium","epicardial derived cell","epicardium","pericyte","adipocyte","epicardial adipocyte","fibroblast","smooth muscle cell","Atrial Epicardium","Ventricular Epicardium"], children: [] },
+          { name: "Cardiogenic Mesoderm → Stromal", labels: ["cardiac mesenchymal","stromal cell","mesenchymal stem"], children: [] },
+          { name: "Splanchnic Mesoderm → Vascular EC", labels: ["endothelial cell","capillary endothelial","vein endothelial","dermis microvascular","Endothelium (EN)","Venous Endothelium","Lympho-Capillary"], children: [] },
+          { name: "Haematopoietic Mesoderm → Immune", labels: ["hematopoietic","megakaryocyte","myeloid","monocyte","macrophage","neutrophil","dendritic","antigen presenting","leukocyte","lymphoid","T cell","erythro"], children: [] },
+          { name: "Splanchnic Mesoderm (early)", labels: ["Second heart field","cardiomyocyte like"], children: [] }
+        ]}
+      ]}
+    ]}
+  ]}
+];
+
+// ── SVG row index: map label text → y coordinate ────────────────────────────
+let rowIndex = {};  // labelText → y (number)
+function buildRowIndex() {
+  const svg = document.querySelector(".scroll-wrap svg");
+  if (!svg) return;
+  svg.querySelectorAll("text").forEach(t => {
+    if (t.getAttribute("x") === "10" && t.getAttribute("font-size") === "10"
+        && t.getAttribute("fill") === "#333") {
+      const y = parseFloat(t.getAttribute("y"));
+      rowIndex[t.textContent.trim()] = y;
+    }
+  });
+}
+
+// ── Highlight logic ──────────────────────────────────────────────────────────
+let hlGroup = null;
+function ensureHlGroup() {
+  const svg = document.querySelector(".scroll-wrap svg");
+  if (!hlGroup) {
+    hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    hlGroup.setAttribute("id", "hl-group");
+    svg.insertBefore(hlGroup, svg.firstChild);
+  }
+}
+function clearHighlights() {
+  if (hlGroup) hlGroup.innerHTML = "";
+  document.querySelectorAll(".lnode-row.active").forEach(el => el.classList.remove("active"));
+}
+function highlightRows(labels, color) {
+  ensureHlGroup();
+  hlGroup.innerHTML = "";
+  const svgWidth = parseFloat(document.querySelector(".scroll-wrap svg").getAttribute("width"));
+  const matched = new Set();
+  Object.keys(rowIndex).forEach(label => {
+    for (const pattern of labels) {
+      if (label.toLowerCase().includes(pattern.toLowerCase())) {
+        matched.add(rowIndex[label]);
+        break;
+      }
+    }
+  });
+  matched.forEach(y => {
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", "0");
+    rect.setAttribute("y", String(y - 18));
+    rect.setAttribute("width", String(svgWidth));
+    rect.setAttribute("height", "24");
+    rect.setAttribute("fill", color);
+    rect.setAttribute("opacity", "0.35");
+    rect.setAttribute("pointer-events", "none");
+    hlGroup.appendChild(rect);
+  });
+  return matched.size;
+}
+
+// ── Collect all labels from a node and its descendants ───────────────────────
+function collectLabels(node) {
+  let out = [...(node.labels || [])];
+  (node.children || []).forEach(c => { out = out.concat(collectLabels(c)); });
+  return out;
+}
+
+// ── Tree rendering ───────────────────────────────────────────────────────────
+// Color palette per top-level branch
+const BRANCH_COLORS = [
+  "#4285f4","#0f9d58","#f59e0b","#ea4335","#9c27b0","#00acc1","#e91e63"
+];
+let activeRow = null;
+function renderTree(nodes, container, depth, color) {
+  nodes.forEach((node, i) => {
+    const branchColor = depth === 0 ? BRANCH_COLORS[i % BRANCH_COLORS.length] : color;
+    const li = document.createElement("li");
+    li.className = "lnode";
+    const allLabels = collectLabels(node);
+    const hasChildren = node.children && node.children.length > 0;
+    const row = document.createElement("div");
+    row.className = "lnode-row";
+    row.style.borderLeft = `3px solid ${branchColor}`;
+    row.innerHTML = `<span class="ltoggle">${hasChildren ? "▼" : ""}</span>
+      <span class="lname">${node.name}</span>`;
+    row.addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearHighlights();
+      row.classList.add("active");
+      const n = highlightRows(allLabels, branchColor);
+      // scroll first highlighted row into view in plot pane
+      if (n === 0) row.classList.remove("active");
+    });
+    li.appendChild(row);
+    if (hasChildren) {
+      const sub = document.createElement("ul");
+      sub.className = "lsubtree";
+      renderTree(node.children, sub, depth + 1, branchColor);
+      li.appendChild(sub);
+      // toggle collapse
+      row.querySelector(".ltoggle").addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = sub.style.display !== "none";
+        sub.style.display = open ? "none" : "";
+        row.querySelector(".ltoggle").textContent = open ? "▶" : "▼";
+      });
+    }
+    container.appendChild(li);
+  });
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  buildRowIndex();
+  renderTree(TREE, document.getElementById("tree-root"), 0, "#4285f4");
+});
+</script></body>
 </html>

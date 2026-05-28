@@ -26,6 +26,7 @@ SLURM_DIR="${PIPELINE_DIR}/slurm"
 # ---------------------------------------------------------------------------
 # Parse arguments
 # ---------------------------------------------------------------------------
+SKIP_TOKENIZE=false
 SKIP_PREPARE=false
 SKIP_TRAJ=false
 EVAL_TEST=false
@@ -33,13 +34,14 @@ PRIOR_STAGE_JOB_ID=""  # optional: start dependency chain from an existing job I
 
 for arg in "$@"; do
     case "${arg}" in
+        --skip-tokenize)   SKIP_TOKENIZE=true ;;
         --skip-prepare)    SKIP_PREPARE=true ;;
         --skip-traj)       SKIP_TRAJ=true ;;
         --eval-test)       EVAL_TEST=true ;;
         --prior-job=*)     PRIOR_STAGE_JOB_ID="${arg#*=}" ;;
         *)
             echo "Unknown argument: ${arg}" >&2
-            echo "Usage: $0 [--skip-prepare] [--skip-traj] [--eval-test] [--prior-job=<JOB_ID>]" >&2
+            echo "Usage: $0 [--skip-tokenize] [--skip-prepare] [--skip-traj] [--eval-test] [--prior-job=<JOB_ID>]" >&2
             exit 1
             ;;
     esac
@@ -59,12 +61,34 @@ fi
 export EVAL_DATASET EVAL_SPLIT
 
 # ---------------------------------------------------------------------------
+# Stage 0 — tokenize (CPU; prerequisite for Stage 1)
+# ---------------------------------------------------------------------------
+TOKENIZE_JOB_ID=""
+if [[ "${SKIP_TOKENIZE}" == false ]]; then
+    PRIOR_DEP=""
+    if [[ -n "${PRIOR_STAGE_JOB_ID}" ]]; then
+        PRIOR_DEP="--dependency=afterok:${PRIOR_STAGE_JOB_ID}"
+    fi
+    TOKENIZE_JOB_ID=$(
+        sbatch --parsable ${PRIOR_DEP} "${SLURM_DIR}/run_tokenize.sh"
+    )
+    echo "Submitted Stage 0 (tokenize sources): job ${TOKENIZE_JOB_ID}"
+fi
+
+# ---------------------------------------------------------------------------
 # Stage 1 — prepare data
 # ---------------------------------------------------------------------------
+PREPARE_DEP=""
+if [[ -n "${TOKENIZE_JOB_ID}" ]]; then
+    PREPARE_DEP="--dependency=afterok:${TOKENIZE_JOB_ID}"
+elif [[ -n "${PRIOR_STAGE_JOB_ID}" && "${SKIP_TOKENIZE}" == true ]]; then
+    PREPARE_DEP="--dependency=afterok:${PRIOR_STAGE_JOB_ID}"
+fi
+
 PREPARE_JOB_ID=""
 if [[ "${SKIP_PREPARE}" == false ]]; then
     PREPARE_JOB_ID=$(
-        sbatch --parsable "${SLURM_DIR}/run_prepare_data.sh"
+        sbatch --parsable ${PREPARE_DEP} "${SLURM_DIR}/run_prepare_data.sh"
     )
     echo "Submitted Stage 1 (prepare data): job ${PREPARE_JOB_ID}"
 fi
@@ -115,6 +139,7 @@ echo "Submitted Stage 4 (evaluation, split=${EVAL_SPLIT}): job ${EVAL_JOB_ID}"
 # ---------------------------------------------------------------------------
 echo ""
 echo "Pipeline submitted successfully:"
+[[ -n "${TOKENIZE_JOB_ID}" ]]  && echo "  Stage 0 (tokenize):        ${TOKENIZE_JOB_ID}"
 [[ -n "${PREPARE_JOB_ID}" ]] && echo "  Stage 1 (prepare):         ${PREPARE_JOB_ID}"
 [[ -n "${TRAJ_JOB_ID}" ]]    && echo "  Stage 2 (trajectories):    ${TRAJ_JOB_ID}"
 echo "  Stage 3 (training):        ${TRAIN_JOB_ID}"

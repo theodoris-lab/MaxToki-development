@@ -2,15 +2,15 @@
 # =============================================================================
 # run_evaluate.sh — Stage 4: evaluate a fine-tuned heart-dev MaxToki model
 # =============================================================================
-# Submits to pod partition.  Uses 1× H200 GPU.
+# Production run on ctbatch.  Uses 1× A100 GPU.
 # Expected wall-time: ~1–2 h for 10K examples.
 # =============================================================================
 #SBATCH --job-name=hd26_eval
-#SBATCH --partition=pod
+#SBATCH --partition=ctbatch
 #SBATCH --time=04:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --gres=gpu:H200:1
+#SBATCH --gres=gpu:A100:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
 #SBATCH --output=/gladstone/theodoris/home/eniyonkuru/maxtoki_development/developmental_finetuning/heart_dev_finetune/logs/slurm/eval_%j.out

@@ -2,17 +2,17 @@
 # =============================================================================
 # run_train.sh — Stage 3: fine-tune MaxToki on heart-development trajectories
 # =============================================================================
-# Submits to pod partition.  Uses DeepSpeed ZeRO-3 + BF16 on H200 GPUs.
-# Requires 4–8 GPUs for the default batch configuration (GAS=256).
+# Production run on ctbatch (7-day limit), DeepSpeed ZeRO-3 + BF16 on A100.
+# Run slurm/run_smoke_test.sh on ctdev first to verify the pipeline.
 # =============================================================================
 #SBATCH --job-name=hd26_train
-#SBATCH --partition=pod
-#SBATCH --time=24:00:00
+#SBATCH --partition=ctbatch
+#SBATCH --time=7-00:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
-#SBATCH --gres=gpu:H200:4
+#SBATCH --gres=gpu:A100:4
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=320G
+#SBATCH --mem=256G
 #SBATCH --output=/gladstone/theodoris/home/eniyonkuru/maxtoki_development/developmental_finetuning/heart_dev_finetune/logs/slurm/train_%j.out
 #SBATCH --error=/gladstone/theodoris/home/eniyonkuru/maxtoki_development/developmental_finetuning/heart_dev_finetune/logs/slurm/train_%j.err
 
